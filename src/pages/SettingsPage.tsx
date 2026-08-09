@@ -3,6 +3,8 @@ import { useAuth } from '@/hooks/use-auth'
 import { useI18n } from '@/hooks/use-i18n'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { FeatherlessModelPanel } from '@/components/FeatherlessModelPanel'
+import { AimlApiModelPanel } from '@/components/AimlApiModelPanel'
 
 export default function SettingsPage() {
   const { user, signOut, demoMode, exitDemo, requestEmailChange } = useAuth()
@@ -10,6 +12,48 @@ export default function SettingsPage() {
 
   const [newEmail, setNewEmail] = useState('')
   const [emailMsg, setEmailMsg] = useState('')
+  const [featherlessEnabled, setFeatherlessEnabled] = useState(
+    () => localStorage.getItem('rooted_ai_provider') === 'featherless',
+  )
+  const [featherlessModel, setFeatherlessModel] = useState(
+    () => localStorage.getItem('rooted_ai_model') || '',
+  )
+  const [aimlApiEnabled, setAimlApiEnabled] = useState(
+    () => localStorage.getItem('rooted_ai_provider') === 'aimlapi',
+  )
+  const [aimlApiModel, setAimlApiModel] = useState(
+    () => localStorage.getItem('rooted_aimlapi_model') || '',
+  )
+
+  const handleFeatherlessToggle = (enabled: boolean) => {
+    setFeatherlessEnabled(enabled)
+    if (enabled) {
+      setAimlApiEnabled(false)
+      localStorage.setItem('rooted_ai_provider', 'featherless')
+    } else {
+      localStorage.setItem('rooted_ai_provider', 'rooted')
+    }
+  }
+
+  const handleAimlApiToggle = (enabled: boolean) => {
+    setAimlApiEnabled(enabled)
+    if (enabled) {
+      setFeatherlessEnabled(false)
+      localStorage.setItem('rooted_ai_provider', 'aimlapi')
+    } else {
+      localStorage.setItem('rooted_ai_provider', 'rooted')
+    }
+  }
+
+  const handleAimlApiModel = (model: string) => {
+    setAimlApiModel(model)
+    localStorage.setItem('rooted_aimlapi_model', model)
+  }
+
+  const handleFeatherlessModel = (model: string) => {
+    setFeatherlessModel(model)
+    localStorage.setItem('rooted_ai_model', model)
+  }
 
   const handleEmailChange = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -87,6 +131,20 @@ export default function SettingsPage() {
           ))}
         </div>
       </div>
+
+      <FeatherlessModelPanel
+        enabled={featherlessEnabled}
+        onToggle={handleFeatherlessToggle}
+        selectedModel={featherlessModel}
+        onSelectModel={handleFeatherlessModel}
+      />
+
+      <AimlApiModelPanel
+        enabled={aimlApiEnabled}
+        onToggle={handleAimlApiToggle}
+        selectedModel={aimlApiModel}
+        onSelectModel={handleAimlApiModel}
+      />
 
       <div className="pt-4">
         <Button onClick={handleSignOut} variant="destructive" className="w-full">

@@ -18,6 +18,7 @@ import { useI18n } from '@/hooks/use-i18n'
 import { useVoice } from '@/hooks/use-voice'
 import { useSpeechmatics } from '@/hooks/use-speechmatics'
 import { sendAssistantChat } from '@/services/assistant'
+import { sendChat, shouldUseStreaming } from '@/lib/assistant-chat'
 import { LanguageModeSelector, type LanguageMode } from '@/components/LanguageModeSelector'
 import { WebSourceBadge } from '@/components/WebSourceBadge'
 
@@ -79,35 +80,72 @@ export function DockedAssistant({ open, onClose, contextText }: DockedAssistantP
     setMessages((prev) => [...prev, { role: 'user', text: query }])
     setLoading(true)
 
+    const streaming = shouldUseStreaming(query)
+
+    if (streaming) {
+      setMessages((prev) => [...prev, { role: 'assistant', text: '' }])
+    }
+
     try {
-      const res = await sendAssistantChat({
+      const result = await sendChat({
         message: query,
         context: contextText,
         language,
         language_mode: languageMode,
+        onProgress: streaming
+          ? (text) =>
+              setMessages((prev) => {
+                const updated = [...prev]
+                if (updated[updated.length - 1]?.role === 'assistant') {
+                  updated[updated.length - 1] = { role: 'assistant', text }
+                }
+                return updated
+              })
+          : undefined,
       })
-      const reply = res.reply || 'Rooted recommends using Route A for compliant transport.'
-      setWebAccess({
-        used: !!res.web_access_used,
-        source: res.web_source || '',
-      })
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'assistant',
-          text: reply,
-          web_sources: res.web_sources || (res.web_source ? [res.web_source] : []),
-        },
-      ])
+
+      const reply = result.reply || 'Rooted recommends using Route A for compliant transport.'
+
+      if (streaming) {
+        setMessages((prev) => {
+          const updated = [...prev]
+          if (updated[updated.length - 1]?.role === 'assistant') {
+            updated[updated.length - 1] = { role: 'assistant', text: reply }
+          }
+          return updated
+        })
+      } else {
+        setWebAccess({
+          used: !!result.web_sources?.length,
+          source: result.web_sources?.[0] || '',
+        })
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'assistant',
+            text: reply,
+            web_sources: result.web_sources,
+          },
+        ])
+      }
+
       if (isSpeaking) speak(reply)
     } catch (_) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: 'assistant',
-          text: 'Rooted advises choosing the primary highway route to minimize delays and costs.',
-        },
-      ])
+      const fallbackText = streaming
+        ? "I couldn't process that request right now. Please try again."
+        : 'Rooted advises choosing the primary highway route to minimize delays and costs.'
+
+      if (streaming) {
+        setMessages((prev) => {
+          const updated = [...prev]
+          if (updated[updated.length - 1]?.role === 'assistant') {
+            updated[updated.length - 1] = { role: 'assistant', text: fallbackText }
+          }
+          return updated
+        })
+      } else {
+        setMessages((prev) => [...prev, { role: 'assistant', text: fallbackText }])
+      }
     } finally {
       setLoading(false)
     }

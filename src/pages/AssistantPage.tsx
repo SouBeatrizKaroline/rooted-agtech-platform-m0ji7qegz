@@ -4,6 +4,7 @@ import { useI18n } from '@/hooks/use-i18n'
 import { useVoice } from '@/hooks/use-voice'
 import { useSpeechmatics } from '@/hooks/use-speechmatics'
 import { sendAssistantChat, getAssistantMessages, AssistantMessageItem } from '@/services/assistant'
+import { sendChat, shouldUseStreaming } from '@/lib/assistant-chat'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { LanguageModeSelector, type LanguageMode } from '@/components/LanguageModeSelector'
@@ -74,43 +75,81 @@ export default function AssistantPage() {
     setMessages((prev) => [...prev, tempUserMsg])
     setLoading(true)
 
-    try {
-      const res = await sendAssistantChat({
-        message: text,
-        language,
-        language_mode: languageMode,
-      })
+    const streaming = shouldUseStreaming(text)
+    const streamMsgId = (Date.now() + 1).toString()
 
-      setWebAccess({
-        used: !!res.web_access_used,
-        source: res.web_source || '',
-      })
-
-      const tempAsstMsg: AssistantMessageItem = {
-        id: (Date.now() + 1).toString(),
-        user: 'assistant',
-        role: 'assistant',
-        content:
-          res.reply || 'Rooted advises prioritizing paved primary highways for heavy corn loads.',
-        language,
-        created: new Date().toISOString(),
-        web_source: res.web_source || undefined,
-        web_sources: res.web_sources || (res.web_source ? [res.web_source] : undefined),
-      }
-      setMessages((prev) => [...prev, tempAsstMsg])
-    } catch (_) {
+    if (streaming) {
       setMessages((prev) => [
         ...prev,
         {
-          id: Date.now().toString(),
+          id: streamMsgId,
           user: 'assistant',
           role: 'assistant',
-          content:
-            'Rooted recommends choosing Route A to minimize travel time and keep fuel costs low.',
+          content: '',
           language,
           created: new Date().toISOString(),
         },
       ])
+    }
+
+    try {
+      const result = await sendChat({
+        message: text,
+        language,
+        language_mode: languageMode,
+        onProgress: streaming
+          ? (txt) =>
+              setMessages((prev) =>
+                prev.map((m) => (m.id === streamMsgId ? { ...m, content: txt } : m)),
+              )
+          : undefined,
+      })
+
+      const reply =
+        result.reply || 'Rooted advises prioritizing paved primary highways for heavy corn loads.'
+
+      if (streaming) {
+        setMessages((prev) =>
+          prev.map((m) => (m.id === streamMsgId ? { ...m, content: reply } : m)),
+        )
+      } else {
+        setWebAccess({
+          used: !!result.web_sources?.length,
+          source: result.web_sources?.[0] || '',
+        })
+        const tempAsstMsg: AssistantMessageItem = {
+          id: streamMsgId,
+          user: 'assistant',
+          role: 'assistant',
+          content: reply,
+          language,
+          created: new Date().toISOString(),
+          web_sources: result.web_sources,
+        }
+        setMessages((prev) => [...prev, tempAsstMsg])
+      }
+    } catch (_) {
+      const fallbackContent = streaming
+        ? "I couldn't process that request right now. Please try again."
+        : 'Rooted recommends choosing Route A to minimize travel time and keep fuel costs low.'
+
+      if (streaming) {
+        setMessages((prev) =>
+          prev.map((m) => (m.id === streamMsgId ? { ...m, content: fallbackContent } : m)),
+        )
+      } else {
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: streamMsgId,
+            user: 'assistant',
+            role: 'assistant',
+            content: fallbackContent,
+            language,
+            created: new Date().toISOString(),
+          },
+        ])
+      }
     } finally {
       setLoading(false)
     }

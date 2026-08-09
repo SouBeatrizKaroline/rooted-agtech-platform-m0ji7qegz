@@ -18,6 +18,8 @@ export interface AssistantChatPayload {
   language?: string
   simple_language?: boolean
   language_mode?: string
+  provider?: 'rooted' | 'featherless' | 'aimlapi'
+  model?: string
 }
 
 export const getAssistantMessages = () =>
@@ -32,6 +34,7 @@ export interface AssistantChatResponse {
   web_source?: string
   web_sources?: string[]
   web_error?: string
+  provider?: string
 }
 
 export const sendAssistantChat = (payload: AssistantChatPayload) =>

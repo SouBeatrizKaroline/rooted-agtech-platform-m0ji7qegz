@@ -14,6 +14,8 @@ routerAdd(
     if (!languageMode) {
       languageMode = body.simple_language ? 'simple' : 'standard'
     }
+    var provider = body.provider || 'rooted'
+    var selectedModel = body.model || ''
 
     if (!message) return e.badRequestError('Message is required')
 
@@ -286,33 +288,229 @@ routerAdd(
     var assistantReply =
       'Rooted recommends choosing Route A to minimize travel time and keep fuel costs low.'
 
-    try {
-      const result = $ai.agent('rooted-assistant').chat({
-        user_id: userId,
-        conversation_id: body.conversation_id || null,
-        message: formattedPrompt,
-      })
-      if (result && result.content) {
-        assistantReply = result.content
-      }
-    } catch (err) {
+    var rootSystemPrompt =
+      'You are Rooted, a calm, knowledgeable, practical, supportive, and concise agricultural logistics companion. Priority in answers: clarity -> context -> recommendation -> action. Explain risks and routes in simple plain language. Label estimates clearly. Respond in the language requested by the user. When web content is provided, analyze it and clearly distinguish web-sourced information from your own knowledge. Never claim web-retrieved information was known beforehand. Never submit forms or perform actions on external websites.'
+
+    var featherlessKey = $secrets.get('FEATHERLESS_API_KEY')
+    var useFeatherless = provider === 'featherless' && featherlessKey
+    var aimlapiKey = $secrets.get('AIMLAPI_KEY')
+    var useAimlapi = provider === 'aimlapi' && aimlapiKey
+
+    if (useFeatherless) {
       try {
-        const chatRes = $ai.chat({
-          model: 'fast',
-          messages: [
-            {
-              role: 'system',
-              content:
-                'You are Rooted, an agricultural logistics decision assistant. Help users choose optimal routes and understand transportation risks. When web content is provided, analyze it and clearly distinguish web-sourced information from your own knowledge. Never claim web-retrieved information was known beforehand. Never submit forms or perform actions on external websites.',
-            },
-            { role: 'user', content: formattedPrompt },
-          ],
-        })
-        if (chatRes?.choices?.[0]?.message?.content) {
-          assistantReply = chatRes.choices[0].message.content
+        var featherModel = selectedModel || ''
+        if (!featherModel) {
+          var msgLower = message.toLowerCase()
+          var isReasoning =
+            /why|analyz|compar|strategy|plan|optimi[sz]e|calculat|risk|evaluat|assess/i.test(
+              msgLower,
+            )
+          var isCoding =
+            /code|function|programming|script|debug|api|implement|develop|software/i.test(msgLower)
+          var isLongContent = formattedPrompt.length > 4000
+          var isMultilingual = language && language !== 'en'
+
+          if (isCoding) featherModel = 'Qwen/Qwen2.5-Coder-32B-Instruct'
+          else if (isReasoning) featherModel = 'deepseek-ai/DeepSeek-R1-Distill-Qwen-32B'
+          else if (isLongContent || isMultilingual)
+            featherModel = 'meta-llama/Llama-3.1-70B-Instruct'
+          else featherModel = 'meta-llama/Llama-3.1-8B-Instruct'
         }
-      } catch (e2) {
-        console.log('Assistant chat fallback notice:', e2.message)
+
+        var featherRes = $http.send({
+          url: 'https://api.featherless.ai/v1/chat/completions',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + featherlessKey,
+          },
+          body: JSON.stringify({
+            model: featherModel,
+            messages: [
+              { role: 'system', content: rootSystemPrompt },
+              { role: 'user', content: formattedPrompt },
+            ],
+            temperature: 0.7,
+            max_tokens: 2048,
+          }),
+          timeout: 60,
+        })
+
+        if (
+          featherRes.statusCode === 200 &&
+          featherRes.json &&
+          featherRes.json.choices &&
+          featherRes.json.choices[0] &&
+          featherRes.json.choices[0].message &&
+          featherRes.json.choices[0].message.content
+        ) {
+          assistantReply = featherRes.json.choices[0].message.content
+        } else if (featherRes.statusCode === 404 || featherRes.statusCode === 400) {
+          throw new Error('model_unavailable')
+        } else {
+          throw new Error('featherless_error_' + featherRes.statusCode)
+        }
+      } catch (featherErr) {
+        var featherErrMsg = String(featherErr.message || featherErr)
+        if (featherErrMsg.indexOf('model_unavailable') !== -1) {
+          assistantReply =
+            language === 'pt'
+              ? 'Este modelo de IA esta indisponivel no momento. Tente outro modelo.'
+              : language === 'es'
+                ? 'Este modelo de IA no esta disponible ahora. Pruebe otro modelo.'
+                : language === 'fr'
+                  ? "Ce modele d'IA n'est pas disponible actuellement. Essayez un autre modele."
+                  : 'This AI model is currently unavailable. Please try another model.'
+        } else {
+          try {
+            const result = $ai.agent('rooted-assistant').chat({
+              user_id: userId,
+              conversation_id: body.conversation_id || null,
+              message: formattedPrompt,
+            })
+            if (result && result.content) {
+              assistantReply = result.content
+            }
+          } catch (err2) {
+            try {
+              const chatRes = $ai.chat({
+                model: 'fast',
+                messages: [
+                  { role: 'system', content: rootSystemPrompt },
+                  { role: 'user', content: formattedPrompt },
+                ],
+              })
+              if (chatRes?.choices?.[0]?.message?.content) {
+                assistantReply = chatRes.choices[0].message.content
+              }
+            } catch (e3) {
+              console.log('All AI providers failed:', e3.message)
+            }
+          }
+        }
+      }
+    } else if (useAimlapi) {
+      try {
+        var aimlapiModel = selectedModel || ''
+        if (!aimlapiModel) {
+          var msgLowerAimlapi = message.toLowerCase()
+          var isReasoningAimlapi =
+            /why|analyz|compar|strategy|plan|optimi[sz]e|calculat|risk|evaluat|assess/i.test(
+              msgLowerAimlapi,
+            )
+          var isCodingAimlapi =
+            /code|function|programming|script|debug|api|implement|develop|software/i.test(
+              msgLowerAimlapi,
+            )
+          var isLongContentAimlapi = formattedPrompt.length > 4000
+          var isMultilingualAimlapi = language && language !== 'en'
+
+          if (isCodingAimlapi) aimlapiModel = 'deepseek-ai/deepseek-coder'
+          else if (isReasoningAimlapi) aimlapiModel = 'openai/o1-mini'
+          else if (isLongContentAimlapi || isMultilingualAimlapi) aimlapiModel = 'openai/gpt-4o'
+          else aimlapiModel = 'openai/gpt-4o-mini'
+        }
+
+        var aimlapiRes = $http.send({
+          url: 'https://api.aimlapi.com/v1/chat/completions',
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + aimlapiKey,
+          },
+          body: JSON.stringify({
+            model: aimlapiModel,
+            messages: [
+              { role: 'system', content: rootSystemPrompt },
+              { role: 'user', content: formattedPrompt },
+            ],
+            temperature: 0.7,
+            max_tokens: 2048,
+          }),
+          timeout: 60,
+        })
+
+        if (
+          aimlapiRes.statusCode === 200 &&
+          aimlapiRes.json &&
+          aimlapiRes.json.choices &&
+          aimlapiRes.json.choices[0] &&
+          aimlapiRes.json.choices[0].message &&
+          aimlapiRes.json.choices[0].message.content
+        ) {
+          assistantReply = aimlapiRes.json.choices[0].message.content
+        } else if (aimlapiRes.statusCode === 404 || aimlapiRes.statusCode === 400) {
+          throw new Error('model_unavailable')
+        } else {
+          throw new Error('aimlapi_error_' + aimlapiRes.statusCode)
+        }
+      } catch (aimlapiErr) {
+        var aimlapiErrMsg = String(aimlapiErr.message || aimlapiErr)
+        if (aimlapiErrMsg.indexOf('model_unavailable') !== -1) {
+          assistantReply =
+            language === 'pt'
+              ? 'Este modelo de IA esta indisponivel no momento. Tente outro modelo.'
+              : language === 'es'
+                ? 'Este modelo de IA no esta disponible ahora. Pruebe otro modelo.'
+                : language === 'fr'
+                  ? "Ce modele d'IA n'est pas disponible actuellement. Essayez un autre modele."
+                  : 'This AI model is currently unavailable. Please try another model.'
+        } else {
+          try {
+            const result = $ai.agent('rooted-assistant').chat({
+              user_id: userId,
+              conversation_id: body.conversation_id || null,
+              message: formattedPrompt,
+            })
+            if (result && result.content) {
+              assistantReply = result.content
+            }
+          } catch (err3) {
+            try {
+              const chatRes = $ai.chat({
+                model: 'fast',
+                messages: [
+                  { role: 'system', content: rootSystemPrompt },
+                  { role: 'user', content: formattedPrompt },
+                ],
+              })
+              if (chatRes?.choices?.[0]?.message?.content) {
+                assistantReply = chatRes.choices[0].message.content
+              }
+            } catch (e4) {
+              console.log('All AI providers failed:', e4.message)
+            }
+          }
+        }
+      }
+    } else {
+      try {
+        const result = $ai.agent('rooted-assistant').chat({
+          user_id: userId,
+          conversation_id: body.conversation_id || null,
+          message: formattedPrompt,
+        })
+        if (result && result.content) {
+          assistantReply = result.content
+        }
+      } catch (err) {
+        try {
+          const chatRes = $ai.chat({
+            model: 'fast',
+            messages: [
+              {
+                role: 'system',
+                content: rootSystemPrompt,
+              },
+              { role: 'user', content: formattedPrompt },
+            ],
+          })
+          if (chatRes?.choices?.[0]?.message?.content) {
+            assistantReply = chatRes.choices[0].message.content
+          }
+        } catch (e2) {
+          console.log('Assistant chat fallback notice:', e2.message)
+        }
       }
     }
 
