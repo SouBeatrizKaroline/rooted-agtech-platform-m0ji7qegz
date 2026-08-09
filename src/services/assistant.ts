@@ -9,6 +9,7 @@ export interface AssistantMessageItem {
   language: string
   created: string
   web_source?: string
+  web_sources?: string[]
 }
 
 export interface AssistantChatPayload {
@@ -16,6 +17,7 @@ export interface AssistantChatPayload {
   context?: string
   language?: string
   simple_language?: boolean
+  language_mode?: string
 }
 
 export const getAssistantMessages = () =>
@@ -25,8 +27,10 @@ export interface AssistantChatResponse {
   reply: string
   language: string
   simple_language: boolean
+  language_mode?: string
   web_access_used?: boolean
   web_source?: string
+  web_sources?: string[]
   web_error?: string
 }
 

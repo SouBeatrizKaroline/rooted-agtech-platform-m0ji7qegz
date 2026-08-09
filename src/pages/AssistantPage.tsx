@@ -1,19 +1,21 @@
 import { useState, useEffect, useRef } from 'react'
-import { Bot, Send, Mic, MicOff, ToggleLeft, ToggleRight, Sparkles, Globe } from 'lucide-react'
+import { Bot, Send, Mic, MicOff, Sparkles, Globe } from 'lucide-react'
 import { useI18n } from '@/hooks/use-i18n'
 import { useVoice } from '@/hooks/use-voice'
 import { useSpeechmatics } from '@/hooks/use-speechmatics'
 import { sendAssistantChat, getAssistantMessages, AssistantMessageItem } from '@/services/assistant'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { LanguageModeSelector, type LanguageMode } from '@/components/LanguageModeSelector'
+import { WebSourceBadge } from '@/components/WebSourceBadge'
 
 export default function AssistantPage() {
   const { t, language } = useI18n()
   const [messages, setMessages] = useState<AssistantMessageItem[]>([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
-  const [simpleMode, setSimpleMode] = useState(
-    () => localStorage.getItem('rooted_simple_mode') === 'true',
+  const [languageMode, setLanguageMode] = useState<LanguageMode>(
+    () => (localStorage.getItem('rooted_language_mode') as LanguageMode) || 'standard',
   )
   const [webAccess, setWebAccess] = useState<{ used: boolean; source: string } | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
@@ -76,7 +78,7 @@ export default function AssistantPage() {
       const res = await sendAssistantChat({
         message: text,
         language,
-        simple_language: simpleMode,
+        language_mode: languageMode,
       })
 
       setWebAccess({
@@ -93,6 +95,7 @@ export default function AssistantPage() {
         language,
         created: new Date().toISOString(),
         web_source: res.web_source || undefined,
+        web_sources: res.web_sources || (res.web_source ? [res.web_source] : undefined),
       }
       setMessages((prev) => [...prev, tempAsstMsg])
     } catch (_) {
@@ -127,21 +130,14 @@ export default function AssistantPage() {
           </div>
         </div>
 
-        <button
-          onClick={() => {
-            const next = !simpleMode
-            setSimpleMode(next)
-            localStorage.setItem('rooted_simple_mode', String(next))
+        <LanguageModeSelector
+          mode={languageMode}
+          onChange={(m) => {
+            setLanguageMode(m)
+            localStorage.setItem('rooted_language_mode', m)
           }}
-          className="text-xs text-emerald-100 bg-[#2F6B45] px-3 py-1.5 rounded-xl flex items-center gap-1.5"
-        >
-          {simpleMode ? (
-            <ToggleRight className="w-4 h-4 text-emerald-300" />
-          ) : (
-            <ToggleLeft className="w-4 h-4" />
-          )}
-          <span>{t('simpleLanguage')}</span>
-        </button>
+          variant="page"
+        />
       </div>
 
       {/* Messages */}
@@ -160,11 +156,11 @@ export default function AssistantPage() {
             >
               {m.content}
             </div>
-            {m.role === 'assistant' && m.web_source && (
-              <span className="flex items-center gap-1 mt-1 text-[10px] text-[#536057] px-1">
-                <Globe className="w-3 h-3" />
-                Source: {m.web_source}
-              </span>
+            {m.role === 'assistant' && (m.web_sources?.length || m.web_source) && (
+              <WebSourceBadge
+                sources={m.web_sources || (m.web_source ? [m.web_source] : [])}
+                iconSize="w-3 h-3"
+              />
             )}
           </div>
         ))}
@@ -175,9 +171,13 @@ export default function AssistantPage() {
               <span>Formulating advice…</span>
             </div>
             {webAccess?.used && (
-              <div className="flex items-center gap-1.5 text-[#2F6B45]">
-                <Globe className="w-3.5 h-3.5" />
-                <span>Using web access</span>
+              <div
+                className="flex items-center gap-1.5 text-[#2F6B45]"
+                role="status"
+                aria-live="polite"
+              >
+                <Globe className="w-3.5 h-3.5 animate-pulse" aria-hidden="true" />
+                <span>{t('webAccessing')}</span>
               </div>
             )}
           </div>

@@ -10,7 +10,7 @@ routerAdd(
 
     if (!url) return e.badRequestError('URL is required')
 
-    const urlPattern = /^https?:\/\/[^\s<>"'\\)]+/i
+    var urlPattern = /^https?:\/\/[^\s<>"'\\)]+/i
     if (!urlPattern.test(url)) {
       return e.json(200, {
         success: false,
@@ -36,13 +36,13 @@ routerAdd(
     var res
     try {
       res = $http.send({
-        url: 'https://api.brightdata.com/webunlocker/request',
+        url: 'https://api.brightdata.com/request',
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: 'Bearer ' + apiKey,
         },
-        body: JSON.stringify({ url: url, format: 'raw' }),
+        body: JSON.stringify({ zone: 'rooted', url: url, format: 'raw' }),
         timeout: 30,
       })
     } catch (err) {
@@ -105,6 +105,14 @@ routerAdd(
     html = html.replace(/<header[\s\S]*?<\/header>/gi, '')
     html = html.replace(/<aside[\s\S]*?<\/aside>/gi, '')
     html = html.replace(/<!--[\s\S]*?-->/g, '')
+    html = html.replace(/<iframe[\s\S]*?<\/iframe>/gi, '')
+    html = html.replace(/class="ad[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
+    html = html.replace(/id="ad[^"]*"[^>]*>[\s\S]*?<\/div>/gi, '')
+
+    var metaDescMatch = html.match(
+      /<meta[^>]+name=["']description["'][^>]+content=["']([^"']*)["']/i,
+    )
+    var metaDesc = metaDescMatch ? metaDescMatch[1].trim() : ''
 
     var titleMatch = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)
     var pageTitle = titleMatch ? titleMatch[1].trim() : ''
@@ -142,13 +150,19 @@ routerAdd(
       .replace(/&ccedil;/g, 'ç')
       .replace(/&atilde;/g, 'ã')
       .replace(/&otilde;/g, 'õ')
+      .replace(/&auml;/g, 'ä')
+      .replace(/&ouml;/g, 'ö')
+      .replace(/&uuml;/g, 'ü')
 
     html = html
       .replace(/\n{3,}/g, '\n\n')
       .replace(/[ \t]+/g, ' ')
       .replace(/^\s+|\s+$/g, '')
 
-    var cleaned = pageTitle ? 'Title: ' + pageTitle + '\n\n' + html : html
+    var cleaned = ''
+    if (pageTitle) cleaned += 'Title: ' + pageTitle + '\n'
+    if (metaDesc) cleaned += 'Description: ' + metaDesc + '\n'
+    cleaned += '\n' + html
 
     var MAX_CONTENT = 12000
     if (cleaned.length > MAX_CONTENT) {

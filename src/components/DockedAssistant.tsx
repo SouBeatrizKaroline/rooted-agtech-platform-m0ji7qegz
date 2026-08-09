@@ -8,8 +8,6 @@ import {
   VolumeX,
   Sparkles,
   X,
-  ToggleLeft,
-  ToggleRight,
   CornerDownLeft,
   Globe,
 } from 'lucide-react'
@@ -20,6 +18,8 @@ import { useI18n } from '@/hooks/use-i18n'
 import { useVoice } from '@/hooks/use-voice'
 import { useSpeechmatics } from '@/hooks/use-speechmatics'
 import { sendAssistantChat } from '@/services/assistant'
+import { LanguageModeSelector, type LanguageMode } from '@/components/LanguageModeSelector'
+import { WebSourceBadge } from '@/components/WebSourceBadge'
 
 interface DockedAssistantProps {
   open: boolean
@@ -30,7 +30,7 @@ interface DockedAssistantProps {
 export function DockedAssistant({ open, onClose, contextText }: DockedAssistantProps) {
   const { t, language } = useI18n()
   const [messages, setMessages] = useState<
-    Array<{ role: 'user' | 'assistant'; text: string; web_source?: string }>
+    Array<{ role: 'user' | 'assistant'; text: string; web_source?: string; web_sources?: string[] }>
   >([
     {
       role: 'assistant',
@@ -40,8 +40,8 @@ export function DockedAssistant({ open, onClose, contextText }: DockedAssistantP
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [webAccess, setWebAccess] = useState<{ used: boolean; source: string } | null>(null)
-  const [simpleMode, setSimpleMode] = useState(
-    () => localStorage.getItem('rooted_simple_mode') === 'true',
+  const [languageMode, setLanguageMode] = useState<LanguageMode>(
+    () => (localStorage.getItem('rooted_language_mode') as LanguageMode) || 'standard',
   )
   const scrollRef = useRef<HTMLDivElement>(null)
 
@@ -84,7 +84,7 @@ export function DockedAssistant({ open, onClose, contextText }: DockedAssistantP
         message: query,
         context: contextText,
         language,
-        simple_language: simpleMode,
+        language_mode: languageMode,
       })
       const reply = res.reply || 'Rooted recommends using Route A for compliant transport.'
       setWebAccess({
@@ -93,7 +93,11 @@ export function DockedAssistant({ open, onClose, contextText }: DockedAssistantP
       })
       setMessages((prev) => [
         ...prev,
-        { role: 'assistant', text: reply, web_source: res.web_source || undefined },
+        {
+          role: 'assistant',
+          text: reply,
+          web_sources: res.web_sources || (res.web_source ? [res.web_source] : []),
+        },
       ])
       if (isSpeaking) speak(reply)
     } catch (_) {
@@ -138,22 +142,13 @@ export function DockedAssistant({ open, onClose, contextText }: DockedAssistantP
         </div>
 
         <div className="flex items-center gap-1">
-          <button
-            onClick={() => {
-              const next = !simpleMode
-              setSimpleMode(next)
-              localStorage.setItem('rooted_simple_mode', String(next))
+          <LanguageModeSelector
+            mode={languageMode}
+            onChange={(m) => {
+              setLanguageMode(m)
+              localStorage.setItem('rooted_language_mode', m)
             }}
-            className="text-xs text-emerald-100 hover:text-white flex items-center gap-1 px-2 py-1 rounded-lg bg-[#2F6B45]"
-            title="Toggle simple plain language mode"
-          >
-            {simpleMode ? (
-              <ToggleRight className="w-4 h-4 text-emerald-300" />
-            ) : (
-              <ToggleLeft className="w-4 h-4" />
-            )}
-            <span className="text-[11px] hidden sm:inline">{t('simpleLanguage')}</span>
-          </button>
+          />
           <Button
             variant="ghost"
             size="icon"
@@ -181,11 +176,8 @@ export function DockedAssistant({ open, onClose, contextText }: DockedAssistantP
             >
               {m.text}
             </div>
-            {m.role === 'assistant' && m.web_source && (
-              <span className="flex items-center gap-1 mt-1 text-[10px] text-[#536057] px-1">
-                <Globe className="w-2.5 h-2.5" />
-                Source: {m.web_source}
-              </span>
+            {m.role === 'assistant' && (m.web_sources?.length || m.web_source) && (
+              <WebSourceBadge sources={m.web_sources || (m.web_source ? [m.web_source] : [])} />
             )}
           </div>
         ))}
@@ -197,9 +189,13 @@ export function DockedAssistant({ open, onClose, contextText }: DockedAssistantP
               <span>Rooted is formulating advice…</span>
             </div>
             {webAccess?.used && (
-              <div className="flex items-center gap-1.5 text-[#2F6B45]">
-                <Globe className="w-3 h-3" />
-                <span>Using web access</span>
+              <div
+                className="flex items-center gap-1.5 text-[#2F6B45]"
+                role="status"
+                aria-live="polite"
+              >
+                <Globe className="w-3 h-3 animate-pulse" aria-hidden="true" />
+                <span>{t('webAccessing')}</span>
               </div>
             )}
           </div>
