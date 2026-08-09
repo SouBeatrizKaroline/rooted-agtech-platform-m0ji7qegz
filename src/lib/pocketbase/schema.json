@@ -29,19 +29,14 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate"
-          ]
+          "autodateTriggers": ["onCreate"]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate",
-            "onUpdate"
-          ]
+          "autodateTriggers": ["onCreate", "onUpdate"]
         }
       ],
       "indexes": [
@@ -110,24 +105,17 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate"
-          ]
+          "autodateTriggers": ["onCreate"]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate",
-            "onUpdate"
-          ]
+          "autodateTriggers": ["onCreate", "onUpdate"]
         }
       ],
-      "indexes": [
-        "CREATE INDEX idx_locations_type ON locations (type)"
-      ]
+      "indexes": ["CREATE INDEX idx_locations_type ON locations (type)"]
     },
     {
       "name": "shipments",
@@ -152,14 +140,7 @@
           "type": "select",
           "required": true,
           "system": false,
-          "selectValues": [
-            "corn",
-            "soybeans",
-            "wheat",
-            "fruits",
-            "vegetables",
-            "other"
-          ]
+          "selectValues": ["corn", "soybeans", "wheat", "fruits", "vegetables", "other"]
         },
         {
           "name": "cargo_detail",
@@ -222,12 +203,7 @@
           "type": "select",
           "required": true,
           "system": false,
-          "selectValues": [
-            "small_truck",
-            "medium_truck",
-            "large_truck",
-            "other"
-          ]
+          "selectValues": ["small_truck", "medium_truck", "large_truck", "other"]
         },
         {
           "name": "cargo_weight_t",
@@ -258,32 +234,21 @@
           "type": "select",
           "required": true,
           "system": false,
-          "selectValues": [
-            "planned",
-            "analyzed",
-            "in_transit",
-            "delayed",
-            "delivered"
-          ]
+          "selectValues": ["planned", "analyzed", "in_transit", "delayed", "delivered"]
         },
         {
           "name": "created",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate"
-          ]
+          "autodateTriggers": ["onCreate"]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate",
-            "onUpdate"
-          ]
+          "autodateTriggers": ["onCreate", "onUpdate"]
         }
       ],
       "indexes": [
@@ -344,11 +309,7 @@
           "type": "select",
           "required": true,
           "system": false,
-          "selectValues": [
-            "low",
-            "medium",
-            "high"
-          ]
+          "selectValues": ["low", "medium", "high"]
         },
         {
           "name": "restrictions",
@@ -385,24 +346,17 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate"
-          ]
+          "autodateTriggers": ["onCreate"]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate",
-            "onUpdate"
-          ]
+          "autodateTriggers": ["onCreate", "onUpdate"]
         }
       ],
-      "indexes": [
-        "CREATE INDEX idx_routes_shipment ON routes (shipment)"
-      ]
+      "indexes": ["CREATE INDEX idx_routes_shipment ON routes (shipment)"]
     },
     {
       "name": "alerts",
@@ -455,11 +409,7 @@
           "type": "select",
           "required": true,
           "system": false,
-          "selectValues": [
-            "normal",
-            "attention",
-            "critical"
-          ]
+          "selectValues": ["normal", "attention", "critical"]
         },
         {
           "name": "label",
@@ -484,24 +434,17 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate"
-          ]
+          "autodateTriggers": ["onCreate"]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate",
-            "onUpdate"
-          ]
+          "autodateTriggers": ["onCreate", "onUpdate"]
         }
       ],
-      "indexes": [
-        "CREATE INDEX idx_alerts_user ON alerts (user)"
-      ]
+      "indexes": ["CREATE INDEX idx_alerts_user ON alerts (user)"]
     },
     {
       "name": "storage_options",
@@ -525,12 +468,7 @@
           "type": "select",
           "required": true,
           "system": false,
-          "selectValues": [
-            "warehouse",
-            "silo",
-            "cold_storage",
-            "distribution_center"
-          ]
+          "selectValues": ["warehouse", "silo", "cold_storage", "distribution_center"]
         },
         {
           "name": "lat",
@@ -573,11 +511,7 @@
           "type": "select",
           "required": true,
           "system": false,
-          "selectValues": [
-            "low",
-            "medium",
-            "high"
-          ]
+          "selectValues": ["low", "medium", "high"]
         },
         {
           "name": "consideration",
@@ -590,38 +524,24 @@
           "type": "select",
           "required": false,
           "system": false,
-          "selectValues": [
-            "corn",
-            "soybeans",
-            "wheat",
-            "fruits",
-            "vegetables",
-            "other"
-          ]
+          "selectValues": ["corn", "soybeans", "wheat", "fruits", "vegetables", "other"]
         },
         {
           "name": "created",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate"
-          ]
+          "autodateTriggers": ["onCreate"]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate",
-            "onUpdate"
-          ]
+          "autodateTriggers": ["onCreate", "onUpdate"]
         }
       ],
-      "indexes": [
-        "CREATE INDEX idx_storage_type ON storage_options (type)"
-      ]
+      "indexes": ["CREATE INDEX idx_storage_type ON storage_options (type)"]
     },
     {
       "name": "assistant_messages",
@@ -646,10 +566,7 @@
           "type": "select",
           "required": true,
           "system": false,
-          "selectValues": [
-            "user",
-            "assistant"
-          ]
+          "selectValues": ["user", "assistant"]
         },
         {
           "name": "content",
@@ -674,24 +591,17 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate"
-          ]
+          "autodateTriggers": ["onCreate"]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate",
-            "onUpdate"
-          ]
+          "autodateTriggers": ["onCreate", "onUpdate"]
         }
       ],
-      "indexes": [
-        "CREATE INDEX idx_asst_msg_user ON assistant_messages (user)"
-      ]
+      "indexes": ["CREATE INDEX idx_asst_msg_user ON assistant_messages (user)"]
     }
   ]
 }
