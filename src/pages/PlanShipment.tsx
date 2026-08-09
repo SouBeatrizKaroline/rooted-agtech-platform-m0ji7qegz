@@ -54,7 +54,7 @@ export default function PlanShipment() {
         constraints,
       })
       clearInterval(interval)
-      navigate(`/plan/results/${res.shipment_id}`)
+      navigate(`/app/shipments/results/${res.shipment_id}`)
     } catch (_) {
       clearInterval(interval)
       setAnalyzing(false)

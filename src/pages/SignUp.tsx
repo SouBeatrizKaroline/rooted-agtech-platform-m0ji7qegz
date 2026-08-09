@@ -35,7 +35,7 @@ export default function SignUp() {
     if (error) {
       setErrorMsg('Could not create account — please try a different email.')
     } else {
-      navigate('/overview')
+      navigate('/app/dashboard')
     }
   }
 

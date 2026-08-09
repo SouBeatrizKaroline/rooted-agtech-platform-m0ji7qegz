@@ -150,7 +150,7 @@ export default function AssistantPage() {
       {/* Input */}
       <div className="p-3 bg-white border-t border-[#DCE3DC] flex items-center gap-2">
         <button
-          onClick={() => (isListening ? stopListening() : startListening((txt) => handleSend(t)))}
+          onClick={() => (isListening ? stopListening() : startListening((txt) => handleSend(txt)))}
           className={`p-2.5 rounded-xl border transition-colors ${
             isListening
               ? 'bg-rose-100 text-rose-700 border-rose-300 animate-pulse'

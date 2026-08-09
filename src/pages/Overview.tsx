@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button'
 import { BadgeTag } from '@/components/ui/BadgeTag'
 
 export default function Overview() {
-  const { user } = useAuth()
+  const { user, demoMode } = useAuth()
   const { t } = useI18n()
 
   const [shipments, setShipments] = useState<ShipmentItem[]>([])
@@ -23,7 +23,7 @@ export default function Overview() {
       setShipments(sData)
       setAlerts(aData)
     } catch {
-      /* intentionally ignored */
+      /* ignored */
     } finally {
       setLoading(false)
     }
@@ -32,7 +32,6 @@ export default function Overview() {
   useEffect(() => {
     loadData()
   }, [])
-
   useRealtime('shipments', () => {
     loadData()
   })
@@ -42,27 +41,26 @@ export default function Overview() {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-[#DCE3DC] pb-5">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-[#214D34]">
-            Good to see you, {user?.name?.split(' ')[0] || 'Manager'}.
+            {demoMode
+              ? 'Welcome to the Demo'
+              : `Good to see you, ${user?.name?.split(' ')[0] || 'Manager'}.`}
           </h1>
           <p className="text-xs sm:text-sm text-[#536057] mt-1">{t('whatToDoNext')}</p>
         </div>
-
         <Button asChild className="bg-[#2F6B45] hover:bg-[#214D34] text-white gap-2 shadow-subtle">
-          <Link to="/plan">
+          <Link to="/app/shipments">
             <PlusCircle className="w-4 h-4" />
             {t('planShipment')}
           </Link>
         </Button>
       </div>
 
-      {/* Quick Actions */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Link
-          to="/plan"
+          to="/app/shipments"
           className="p-4 rounded-2xl bg-white border border-[#DCE3DC] hover:border-[#2F6B45] transition-all shadow-subtle flex items-center gap-3 group"
         >
           <div className="w-10 h-10 rounded-xl bg-[#DDEBDD] text-[#2F6B45] flex items-center justify-center group-hover:bg-[#2F6B45] group-hover:text-white transition-colors">
@@ -73,9 +71,8 @@ export default function Overview() {
             <p className="text-[11px] text-[#536057]">Guided route optimization</p>
           </div>
         </Link>
-
         <Link
-          to="/map"
+          to="/app/map"
           className="p-4 rounded-2xl bg-white border border-[#DCE3DC] hover:border-[#2F6B45] transition-all shadow-subtle flex items-center gap-3 group"
         >
           <div className="w-10 h-10 rounded-xl bg-[#DDEBDD] text-[#2F6B45] flex items-center justify-center group-hover:bg-[#2F6B45] group-hover:text-white transition-colors">
@@ -86,9 +83,8 @@ export default function Overview() {
             <p className="text-[11px] text-[#536057]">Live restrictions & hubs</p>
           </div>
         </Link>
-
         <Link
-          to="/assistant"
+          to="/app/assistant"
           className="p-4 rounded-2xl bg-white border border-[#DCE3DC] hover:border-[#2F6B45] transition-all shadow-subtle flex items-center gap-3 group"
         >
           <div className="w-10 h-10 rounded-xl bg-[#DDEBDD] text-[#2F6B45] flex items-center justify-center group-hover:bg-[#2F6B45] group-hover:text-white transition-colors">
@@ -101,18 +97,16 @@ export default function Overview() {
         </Link>
       </div>
 
-      {/* Active Shipments Section */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold text-[#214D34]">{t('activeShipments')}</h2>
           <Link
-            to="/routes"
+            to="/app/routes"
             className="text-xs font-semibold text-[#2F6B45] hover:underline flex items-center gap-1"
           >
             View all <ArrowRight className="w-3 h-3" />
           </Link>
         </div>
-
         {loading ? (
           <div className="p-8 text-center bg-white rounded-2xl border border-[#DCE3DC] text-xs text-[#536057]">
             Loading active shipments…
@@ -125,7 +119,7 @@ export default function Overview() {
               <p className="text-xs text-[#536057] mt-1">{t('planFirstShipment')}</p>
             </div>
             <Button asChild size="sm" className="bg-[#2F6B45] text-white">
-              <Link to="/plan">{t('planShipment')}</Link>
+              <Link to="/app/shipments">{t('planShipment')}</Link>
             </Button>
           </div>
         ) : (
@@ -144,7 +138,6 @@ export default function Overview() {
                     label={s.status}
                   />
                 </div>
-
                 <div>
                   <p className="font-bold text-sm text-[#214D34]">
                     {s.origin_name} → {s.destination_name}
@@ -153,11 +146,10 @@ export default function Overview() {
                     Vehicle: {s.vehicle_type.replace('_', ' ')} · {s.cargo_weight_t || 20}t weight
                   </p>
                 </div>
-
                 <div className="pt-2 border-t border-[#DCE3DC] flex justify-between items-center">
                   <span className="text-[11px] text-[#737D75]">Status: {s.status}</span>
                   <Button asChild variant="ghost" size="sm" className="text-xs text-[#2F6B45]">
-                    <Link to={`/plan/results/${s.id}`}>View Route Analysis →</Link>
+                    <Link to={`/app/shipments/results/${s.id}`}>View Route Analysis →</Link>
                   </Button>
                 </div>
               </div>
@@ -166,10 +158,8 @@ export default function Overview() {
         )}
       </div>
 
-      {/* Alerts Section */}
       <div className="space-y-4">
         <h2 className="text-lg font-bold text-[#214D34]">{t('importantAlerts')}</h2>
-
         {alerts.length === 0 ? (
           <div className="p-4 bg-white rounded-2xl border border-[#DCE3DC] text-xs text-[#536057] text-center">
             🟢 All routes clear — no critical disruptions reported.

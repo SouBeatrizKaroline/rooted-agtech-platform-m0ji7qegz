@@ -1,7 +1,7 @@
 import { Link, Outlet } from 'react-router-dom'
-import { Sprout, Globe } from 'lucide-react'
+import { Sprout, Globe, LayoutDashboard } from 'lucide-react'
 import { useI18n } from '@/hooks/use-i18n'
-import { Language } from '@/i18n/translations'
+import { useAuth } from '@/hooks/use-auth'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -12,6 +12,7 @@ import {
 
 export default function PublicLayout() {
   const { language, setLanguage, t } = useI18n()
+  const { isAuthenticated } = useAuth()
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F6F7F2] text-[#17221A]">
@@ -57,17 +58,28 @@ export default function PublicLayout() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <Button
-            asChild
-            variant="outline"
-            size="sm"
-            className="border-[#2F6B45] text-[#2F6B45] hover:bg-[#DDEBDD]"
-          >
-            <Link to="/login">{t('signIn')}</Link>
-          </Button>
-          <Button asChild size="sm" className="bg-[#2F6B45] hover:bg-[#214D34] text-white">
-            <Link to="/signup">{t('getStarted')}</Link>
-          </Button>
+          {isAuthenticated ? (
+            <Button asChild size="sm" className="bg-[#2F6B45] hover:bg-[#214D34] text-white gap-2">
+              <Link to="/app/dashboard">
+                <LayoutDashboard className="w-3.5 h-3.5" />
+                Dashboard
+              </Link>
+            </Button>
+          ) : (
+            <>
+              <Button
+                asChild
+                variant="outline"
+                size="sm"
+                className="border-[#2F6B45] text-[#2F6B45] hover:bg-[#DDEBDD]"
+              >
+                <Link to="/login">{t('signIn')}</Link>
+              </Button>
+              <Button asChild size="sm" className="bg-[#2F6B45] hover:bg-[#214D34] text-white">
+                <Link to="/signup">{t('getStarted')}</Link>
+              </Button>
+            </>
+          )}
         </div>
       </header>
 

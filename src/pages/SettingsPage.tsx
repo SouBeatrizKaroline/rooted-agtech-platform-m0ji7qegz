@@ -1,20 +1,15 @@
 import { useState } from 'react'
-import { User, ShieldCheck, Globe, Volume2, Lock } from 'lucide-react'
 import { useAuth } from '@/hooks/use-auth'
 import { useI18n } from '@/hooks/use-i18n'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 
 export default function SettingsPage() {
-  const { user, signOut, requestEmailChange } = useAuth()
+  const { user, signOut, demoMode, exitDemo, requestEmailChange } = useAuth()
   const { language, setLanguage, t } = useI18n()
 
   const [newEmail, setNewEmail] = useState('')
   const [emailMsg, setEmailMsg] = useState('')
-  const [simpleMode, setSimpleMode] = useState(
-    () => localStorage.getItem('rooted_simple_mode') === 'true',
-  )
 
   const handleEmailChange = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -22,6 +17,11 @@ export default function SettingsPage() {
     const { error } = await requestEmailChange(newEmail)
     if (error) setEmailMsg('Could not request email change.')
     else setEmailMsg('Confirmation link sent to your new email.')
+  }
+
+  const handleSignOut = () => {
+    if (demoMode) exitDemo()
+    else signOut()
   }
 
   return (
@@ -33,38 +33,42 @@ export default function SettingsPage() {
         </p>
       </div>
 
-      {/* Account Info */}
       <div className="p-5 bg-white border border-[#DCE3DC] rounded-2xl space-y-4 shadow-subtle">
         <h3 className="font-bold text-base text-[#214D34]">User Profile</h3>
         <div className="grid grid-cols-2 gap-4 text-xs text-[#536057]">
           <div>
-            Name: <strong>{user?.name || 'Manager'}</strong>
+            Name: <strong>{demoMode ? 'Demo Explorer' : user?.name || 'Manager'}</strong>
           </div>
           <div>
-            Current Email: <strong>{user?.email}</strong>
+            Current Email: <strong>{demoMode ? 'demo@rooted.agtech' : user?.email}</strong>
           </div>
         </div>
+        {demoMode && (
+          <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-900 font-medium">
+            You are in Demo Mode. Email and password changes are disabled.
+          </div>
+        )}
       </div>
 
-      {/* Email Change */}
-      <div className="p-5 bg-white border border-[#DCE3DC] rounded-2xl space-y-4 shadow-subtle">
-        <h3 className="font-bold text-base text-[#214D34]">Change Email</h3>
-        {emailMsg && <p className="text-xs text-emerald-800 font-medium">{emailMsg}</p>}
-        <form onSubmit={handleEmailChange} className="space-y-3">
-          <Input
-            type="email"
-            placeholder="New email address"
-            value={newEmail}
-            onChange={(e) => setNewEmail(e.target.value)}
-            className="border-[#DCE3DC]"
-          />
-          <Button type="submit" size="sm" className="bg-[#2F6B45] text-white">
-            Request Email Change
-          </Button>
-        </form>
-      </div>
+      {!demoMode && (
+        <div className="p-5 bg-white border border-[#DCE3DC] rounded-2xl space-y-4 shadow-subtle">
+          <h3 className="font-bold text-base text-[#214D34]">Change Email</h3>
+          {emailMsg && <p className="text-xs text-emerald-800 font-medium">{emailMsg}</p>}
+          <form onSubmit={handleEmailChange} className="space-y-3">
+            <Input
+              type="email"
+              placeholder="New email address"
+              value={newEmail}
+              onChange={(e) => setNewEmail(e.target.value)}
+              className="border-[#DCE3DC]"
+            />
+            <Button type="submit" size="sm" className="bg-[#2F6B45] text-white">
+              Request Email Change
+            </Button>
+          </form>
+        </div>
+      )}
 
-      {/* Language & Preferences */}
       <div className="p-5 bg-white border border-[#DCE3DC] rounded-2xl space-y-4 shadow-subtle">
         <h3 className="font-bold text-base text-[#214D34]">{t('settingsLanguage')}</h3>
         <div className="flex gap-2">
@@ -84,10 +88,9 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      {/* Sign Out */}
       <div className="pt-4">
-        <Button onClick={signOut} variant="destructive" className="w-full">
-          {t('signOut')}
+        <Button onClick={handleSignOut} variant="destructive" className="w-full">
+          {demoMode ? 'Exit Demo' : t('signOut')}
         </Button>
       </div>
     </div>

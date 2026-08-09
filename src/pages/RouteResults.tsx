@@ -39,10 +39,10 @@ export default function RouteResults() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center gap-2">
         <Button asChild variant="ghost" size="sm" className="text-xs text-[#536057]">
-          <Link to="/overview">
+          <Link to="/app/dashboard">
             <ArrowLeft className="w-4 h-4 mr-1" /> Back to Overview
           </Link>
-        </Button>
+        </Button>{' '}
       </div>
 
       <div>

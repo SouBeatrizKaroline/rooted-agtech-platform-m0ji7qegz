@@ -3,12 +3,12 @@ import {
   Sprout,
   Route,
   ShieldCheck,
-  HelpCircle,
   ArrowRight,
-  Layers,
   Bot,
   Truck,
   CheckCircle2,
+  Mic,
+  Volume2,
 } from 'lucide-react'
 import { useI18n } from '@/hooks/use-i18n'
 import { Button } from '@/components/ui/button'
@@ -18,19 +18,15 @@ export default function Index() {
 
   return (
     <div className="space-y-16 pb-16">
-      {/* Hero */}
-      <section className="relative pt-12 pb-20 px-4 max-w-6xl mx-auto text-center space-y-6">
+      <section className="pt-8 pb-12 px-4 max-w-6xl mx-auto text-center space-y-6">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#DDEBDD] border border-[#2F6B45]/20 text-[#214D34] text-xs font-semibold">
           <Sprout className="w-3.5 h-3.5 text-[#2F6B45]" />
           <span>Agricultural Logistics & Decision Platform</span>
         </div>
-
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[#214D34] tracking-tight leading-tight">
           {t('tagline')}
         </h1>
-
         <p className="max-w-2xl mx-auto text-base sm:text-lg text-[#536057]">{t('subtitle')}</p>
-
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
           <Button
             asChild
@@ -42,7 +38,6 @@ export default function Index() {
               <ArrowRight className="w-4 h-4" />
             </Link>
           </Button>
-
           <Button
             asChild
             variant="outline"
@@ -53,8 +48,7 @@ export default function Index() {
           </Button>
         </div>
 
-        {/* Hero Visual Mockup */}
-        <div className="mt-12 bg-white border border-[#DCE3DC] rounded-2xl p-4 sm:p-6 shadow-elevation max-w-4xl mx-auto text-left relative overflow-hidden">
+        <div className="mt-10 bg-white border border-[#DCE3DC] rounded-2xl p-4 sm:p-6 shadow-elevation max-w-4xl mx-auto text-left">
           <div className="flex items-center justify-between border-b border-[#DCE3DC] pb-3 mb-4">
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-emerald-500" />
@@ -64,7 +58,6 @@ export default function Index() {
               12% Fuel Savings
             </span>
           </div>
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-3.5 rounded-xl bg-[#F6F7F2] border border-[#DCE3DC]">
               <span className="text-[10px] text-[#737D75] uppercase font-bold">
@@ -91,16 +84,14 @@ export default function Index() {
         </div>
       </section>
 
-      {/* How it works */}
-      <section className="bg-white border-y border-[#DCE3DC] py-16 px-4">
-        <div className="max-w-5xl mx-auto space-y-10 text-center">
+      <section className="bg-white border-y border-[#DCE3DC] py-14 px-4">
+        <div className="max-w-5xl mx-auto space-y-8 text-center">
           <div>
             <h2 className="text-2xl sm:text-3xl font-bold text-[#214D34]">
               {t('howItWorksTitle')}
             </h2>
             <p className="text-sm text-[#536057] mt-1">{t('howItWorksDesc')}</p>
           </div>
-
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
             {[
               { title: t('step1'), desc: t('step1Desc'), icon: Truck },
@@ -112,7 +103,7 @@ export default function Index() {
                 key={idx}
                 className="p-5 rounded-2xl bg-[#F6F7F2] border border-[#DCE3DC] space-y-2"
               >
-                <div className="w-10 h-10 rounded-xl bg-[#DDEBDD] text-[#2F6B45] flex items-center justify-center font-bold">
+                <div className="w-10 h-10 rounded-xl bg-[#DDEBDD] text-[#2F6B45] flex items-center justify-center">
                   <step.icon className="w-5 h-5" />
                 </div>
                 <h3 className="font-bold text-sm text-[#214D34]">{step.title}</h3>
@@ -123,12 +114,10 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Benefits */}
-      <section className="max-w-5xl mx-auto px-4 space-y-10">
+      <section className="max-w-5xl mx-auto px-4 space-y-8">
         <div className="text-center">
           <h2 className="text-2xl sm:text-3xl font-bold text-[#214D34]">{t('benefitsTitle')}</h2>
         </div>
-
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {[
             { title: t('benefit1'), desc: t('benefit1Desc') },
@@ -150,9 +139,35 @@ export default function Index() {
         </div>
       </section>
 
-      {/* Target Audience */}
-      <section className="bg-[#214D34] text-white py-16 px-4">
-        <div className="max-w-5xl mx-auto space-y-8 text-center">
+      <section className="max-w-4xl mx-auto px-4">
+        <div className="bg-[#214D34] text-white rounded-2xl p-8 space-y-6 text-center">
+          <div className="w-14 h-14 rounded-2xl bg-[#2F6B45] flex items-center justify-center mx-auto">
+            <Bot className="w-7 h-7" />
+          </div>
+          <h2 className="text-2xl font-bold">Meet the Rooted AI Assistant</h2>
+          <p className="text-sm text-emerald-100 max-w-2xl mx-auto">
+            Ask questions about routes, risks, vehicle restrictions, or storage availability. Rooted
+            explains logistics in plain language — no jargon, just clear recommendations.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-xs text-emerald-200">
+            <div className="flex items-center gap-2">
+              <Mic className="w-4 h-4" />
+              <span>Voice input supported</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Volume2 className="w-4 h-4" />
+              <span>Spoken responses</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="w-4 h-4" />
+              <span>Accessible in 3 languages</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-[#214D34] text-white py-14 px-4">
+        <div className="max-w-5xl mx-auto space-y-6 text-center">
           <h2 className="text-2xl sm:text-3xl font-bold">{t('peopleTitle')}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
             {[
@@ -173,7 +188,6 @@ export default function Index() {
         </div>
       </section>
 
-      {/* CTA */}
       <section className="max-w-4xl mx-auto px-4 text-center space-y-6">
         <h2 className="text-3xl font-bold text-[#214D34]">Let's make your next shipment easier.</h2>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -185,7 +199,7 @@ export default function Index() {
             <Link to="/signup">{t('planShipment')}</Link>
           </Button>
           <Button asChild variant="outline" size="lg" className="border-[#DCE3DC] text-[#214D34]">
-            <Link to="/login">{t('talkToRooted')}</Link>
+            <Link to="/login">{t('signIn')}</Link>
           </Button>
         </div>
       </section>

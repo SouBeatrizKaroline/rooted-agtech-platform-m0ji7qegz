@@ -61,7 +61,7 @@ export function OnboardingModal() {
 
         <DialogFooter className="flex-col sm:flex-row gap-2">
           <Button
-            onClick={() => handleDismiss('/plan')}
+            onClick={() => handleDismiss('/app/shipments')}
             className="w-full bg-[#2F6B45] hover:bg-[#214D34] text-white gap-2"
           >
             <Route className="w-4 h-4" />

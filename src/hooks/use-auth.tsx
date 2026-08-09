@@ -1,17 +1,23 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import pb from '@/lib/pocketbase/client'
 
+const DEMO_EMAIL = 'demo@rooted.agtech'
+const DEMO_PASSWORD = 'DemoRooted2024'
+
 interface AuthContextType {
   user: any
   isAuthenticated: boolean
+  demoMode: boolean
+  loading: boolean
   signUp: (email: string, password: string, name?: string) => Promise<{ error: any }>
   signIn: (email: string, password: string) => Promise<{ error: any }>
   signOut: () => void
+  enterDemo: () => Promise<{ error: any }>
+  exitDemo: () => void
   requestPasswordReset: (email: string) => Promise<{ error: any }>
   confirmPasswordReset: (token: string, password: string) => Promise<{ error: any }>
   requestEmailChange: (newEmail: string) => Promise<{ error: any }>
   confirmEmailChange: (token: string, password: string) => Promise<{ error: any }>
-  loading: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -25,6 +31,9 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<any>(pb.authStore.isValid ? pb.authStore.record : null)
   const [isAuthenticated, setIsAuthenticated] = useState(pb.authStore.isValid)
+  const [demoMode, setDemoMode] = useState(
+    () => localStorage.getItem('rooted_demo_mode') === 'true' && pb.authStore.isValid,
+  )
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -35,7 +44,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     if (pb.authStore.isValid) {
       pb.collection('users')
         .authRefresh()
-        .catch(() => pb.authStore.clear())
+        .catch(() => {
+          pb.authStore.clear()
+          localStorage.removeItem('rooted_demo_mode')
+          setDemoMode(false)
+        })
         .finally(() => setLoading(false))
     } else {
       if (pb.authStore.record) pb.authStore.clear()
@@ -46,6 +59,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [])
 
+  const clearDemoFlag = () => {
+    localStorage.removeItem('rooted_demo_mode')
+    setDemoMode(false)
+  }
+
   const signUp = async (email: string, password: string, name?: string) => {
     try {
       await pb.collection('users').create({
@@ -55,10 +73,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         name: name || 'Agricultural Logistics Manager',
       })
       await pb.collection('users').authWithPassword(email, password)
+      clearDemoFlag()
       try {
         await pb.collection('users').requestVerification(email)
       } catch {
-        /* intentionally ignored */
+        /* ignored */
       }
       return { error: null }
     } catch (error) {
@@ -69,6 +88,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signIn = async (email: string, password: string) => {
     try {
       await pb.collection('users').authWithPassword(email, password)
+      clearDemoFlag()
       return { error: null }
     } catch (error) {
       return { error }
@@ -77,6 +97,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signOut = () => {
     pb.authStore.clear()
+  }
+
+  const enterDemo = async () => {
+    try {
+      await pb.collection('users').authWithPassword(DEMO_EMAIL, DEMO_PASSWORD)
+      localStorage.setItem('rooted_demo_mode', 'true')
+      setDemoMode(true)
+      return { error: null }
+    } catch (error) {
+      return { error }
+    }
+  }
+
+  const exitDemo = () => {
+    pb.authStore.clear()
+    localStorage.removeItem('rooted_demo_mode')
+    setDemoMode(false)
   }
 
   const requestPasswordReset = async (email: string) => {
@@ -121,14 +158,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       value={{
         user,
         isAuthenticated,
+        demoMode,
+        loading,
         signUp,
         signIn,
         signOut,
+        enterDemo,
+        exitDemo,
         requestPasswordReset,
         confirmPasswordReset,
         requestEmailChange,
         confirmEmailChange,
-        loading,
       }}
     >
       {children}

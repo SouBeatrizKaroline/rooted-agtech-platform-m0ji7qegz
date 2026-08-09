@@ -1,13 +1,15 @@
-/* Main App Component - Handles routing (using react-router-dom), query client and other providers - use this file to add all routes */
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from '@/components/ui/toaster'
 import { Toaster as Sonner } from '@/components/ui/sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { AuthProvider } from '@/hooks/use-auth'
 import { I18nProvider } from '@/hooks/use-i18n'
+import { ProtectedRoute } from '@/components/ProtectedRoute'
+import { PublicRoute } from '@/components/PublicRoute'
+import PublicLayout from '@/components/PublicLayout'
+import Layout from '@/components/Layout'
 import Index from './pages/Index'
 import NotFound from './pages/NotFound'
-import Layout from './components/Layout'
 import Overview from './pages/Overview'
 import PlanShipment from './pages/PlanShipment'
 import RouteResults from './pages/RouteResults'
@@ -24,9 +26,7 @@ import ForgotPassword from './pages/ForgotPassword'
 import ResetPassword from './pages/ResetPassword'
 import VerifyEmail from './pages/VerifyEmail'
 import ConfirmEmailChange from './pages/ConfirmEmailChange'
-
-// ONLY IMPORT AND RENDER WORKING PAGES, NEVER ADD PLACEHOLDER COMPONENTS OR PAGES IN THIS FILE
-// AVOID REMOVING ANY CONTEXT PROVIDERS FROM THIS FILE (e.g. TooltipProvider, Toaster, Sonner)
+import DemoPage from './pages/DemoPage'
 
 const App = () => (
   <BrowserRouter>
@@ -36,28 +36,39 @@ const App = () => (
           <Toaster />
           <Sonner />
           <Routes>
-            {/* Public routes (outside Layout) */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/how-it-works" element={<HowItWorks />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/verify-email" element={<VerifyEmail />} />
-            <Route path="/confirm-email-change" element={<ConfirmEmailChange />} />
-
-            {/* App routes (inside Layout with sidebar navigation) */}
-            <Route element={<Layout />}>
+            {/* Public pages with header/footer */}
+            <Route element={<PublicLayout />}>
               <Route path="/" element={<Index />} />
-              <Route path="/overview" element={<Overview />} />
-              <Route path="/plan" element={<PlanShipment />} />
-              <Route path="/plan/results/:shipmentId" element={<RouteResults />} />
-              <Route path="/routes" element={<RoutesList />} />
-              <Route path="/map" element={<MapPage />} />
-              <Route path="/storage" element={<StoragePage />} />
-              <Route path="/insights" element={<InsightsPage />} />
-              <Route path="/assistant" element={<AssistantPage />} />
-              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/how-it-works" element={<HowItWorks />} />
+              <Route path="/demo" element={<DemoPage />} />
             </Route>
+
+            {/* Auth pages — redirect to app if already authenticated */}
+            <Route element={<PublicRoute />}>
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<SignUp />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/verify-email" element={<VerifyEmail />} />
+              <Route path="/confirm-email-change" element={<ConfirmEmailChange />} />
+            </Route>
+
+            {/* Protected application routes */}
+            <Route element={<ProtectedRoute />}>
+              <Route element={<Layout />}>
+                <Route path="/app" element={<Navigate to="/app/dashboard" replace />} />
+                <Route path="/app/dashboard" element={<Overview />} />
+                <Route path="/app/shipments" element={<PlanShipment />} />
+                <Route path="/app/shipments/results/:shipmentId" element={<RouteResults />} />
+                <Route path="/app/routes" element={<RoutesList />} />
+                <Route path="/app/map" element={<MapPage />} />
+                <Route path="/app/storage" element={<StoragePage />} />
+                <Route path="/app/insights" element={<InsightsPage />} />
+                <Route path="/app/assistant" element={<AssistantPage />} />
+                <Route path="/app/settings" element={<SettingsPage />} />
+              </Route>
+            </Route>
+
             <Route path="*" element={<NotFound />} />
           </Routes>
         </TooltipProvider>

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
+import { Outlet, Link, useLocation } from 'react-router-dom'
 import {
   Sprout,
   LayoutDashboard,
@@ -12,54 +12,51 @@ import {
   Globe,
   LogOut,
   Menu,
-  X,
   PlusCircle,
-  Mic,
 } from 'lucide-react'
 import { useAuth } from '@/hooks/use-auth'
 import { useI18n } from '@/hooks/use-i18n'
 import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from '@/components/ui/dropdown-menu'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { DockedAssistant } from '@/components/DockedAssistant'
 import { OnboardingModal } from '@/components/OnboardingModal'
+import { DemoBanner } from '@/components/DemoBanner'
 
 export default function Layout() {
   const location = useLocation()
-  const navigate = useNavigate()
-  const { user, signOut } = useAuth()
+  const { user, signOut, demoMode, exitDemo } = useAuth()
   const { language, setLanguage, t } = useI18n()
   const [assistantOpen, setAssistantOpen] = useState(false)
 
   const navItems = [
-    { path: '/overview', label: t('navOverview'), icon: LayoutDashboard },
-    { path: '/plan', label: t('navPlan'), icon: PlusCircle },
-    { path: '/routes', label: t('navRoutes'), icon: Route },
-    { path: '/map', label: t('navMap'), icon: Map },
-    { path: '/storage', label: t('navStorage'), icon: Warehouse },
-    { path: '/insights', label: t('navInsights'), icon: BarChart3 },
-    { path: '/assistant', label: t('navAssistant'), icon: Bot },
-    { path: '/settings', label: t('navSettings'), icon: Settings },
+    { path: '/app/dashboard', label: t('navOverview'), icon: LayoutDashboard },
+    { path: '/app/shipments', label: t('navPlan'), icon: PlusCircle },
+    { path: '/app/routes', label: t('navRoutes'), icon: Route },
+    { path: '/app/map', label: t('navMap'), icon: Map },
+    { path: '/app/storage', label: t('navStorage'), icon: Warehouse },
+    { path: '/app/insights', label: t('navInsights'), icon: BarChart3 },
+    { path: '/app/assistant', label: t('navAssistant'), icon: Bot },
+    { path: '/app/settings', label: t('navSettings'), icon: Settings },
   ]
 
   const mobileNavFive = [
-    { path: '/overview', label: t('navOverview'), icon: LayoutDashboard },
-    { path: '/plan', label: t('navPlan'), icon: PlusCircle },
-    { path: '/map', label: t('navMap'), icon: Map },
-    { path: '/assistant', label: t('navAssistant'), icon: Bot },
-    { path: '/settings', label: t('navMore'), icon: Settings },
+    { path: '/app/dashboard', label: t('navOverview'), icon: LayoutDashboard },
+    { path: '/app/shipments', label: t('navPlan'), icon: PlusCircle },
+    { path: '/app/map', label: t('navMap'), icon: Map },
+    { path: '/app/assistant', label: t('navAssistant'), icon: Bot },
+    { path: '/app/settings', label: t('navMore'), icon: Settings },
   ]
+
+  const handleSignOut = () => {
+    if (demoMode) exitDemo()
+    else signOut()
+  }
 
   return (
     <div className="min-h-screen bg-[#F6F7F2] text-[#17221A] flex flex-col lg:flex-row">
-      <OnboardingModal />
+      {!demoMode && <OnboardingModal />}
+      {demoMode && <DemoBanner onExit={exitDemo} />}
 
-      {/* Desktop Sidebar (>=1024px) */}
       <aside className="hidden lg:flex w-[260px] flex-col fixed inset-y-0 left-0 bg-white border-r border-[#DCE3DC] z-30">
         <div className="p-5 border-b border-[#DCE3DC] flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-[#2F6B45] text-white flex items-center justify-center shadow-subtle">
@@ -112,18 +109,22 @@ export default function Layout() {
           <div className="flex items-center justify-between p-2 rounded-xl bg-[#F6F7F2] border border-[#DCE3DC]">
             <div className="flex items-center gap-2 overflow-hidden">
               <div className="w-8 h-8 rounded-full bg-[#2F6B45] text-white flex items-center justify-center font-bold text-xs">
-                {user?.name?.[0] || 'U'}
+                {demoMode ? 'D' : user?.name?.[0] || 'U'}
               </div>
               <div className="overflow-hidden text-xs">
-                <p className="font-bold text-[#214D34] truncate">{user?.name || 'Manager'}</p>
-                <p className="text-[10px] text-[#737D75] truncate">{user?.email}</p>
+                <p className="font-bold text-[#214D34] truncate">
+                  {demoMode ? 'Demo Explorer' : user?.name || 'Manager'}
+                </p>
+                <p className="text-[10px] text-[#737D75] truncate">
+                  {demoMode ? 'Demo Mode' : user?.email}
+                </p>
               </div>
             </div>
             <Button
               variant="ghost"
               size="icon"
-              onClick={signOut}
-              title="Sign Out"
+              onClick={handleSignOut}
+              title={demoMode ? 'Exit Demo' : 'Sign Out'}
               className="h-7 w-7 text-[#737D75] hover:text-rose-600"
             >
               <LogOut className="w-3.5 h-3.5" />
@@ -132,15 +133,13 @@ export default function Layout() {
         </div>
       </aside>
 
-      {/* Mobile Header (<1024px) */}
       <header className="lg:hidden sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-[#DCE3DC] px-4 py-3 flex items-center justify-between">
-        <Link to="/overview" className="flex items-center gap-2">
+        <Link to="/app/dashboard" className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-xl bg-[#2F6B45] text-white flex items-center justify-center">
             <Sprout className="w-4 h-4" />
           </div>
           <span className="font-bold text-lg text-[#214D34]">Rooted</span>
         </Link>
-
         <div className="flex items-center gap-2">
           <button
             onClick={() => setLanguage(language === 'en' ? 'pt' : language === 'pt' ? 'es' : 'en')}
@@ -148,7 +147,6 @@ export default function Layout() {
           >
             {language}
           </button>
-
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon" className="h-9 w-9 border-[#DCE3DC]">
@@ -177,25 +175,23 @@ export default function Layout() {
                 ))}
               </nav>
               <Button
-                onClick={signOut}
+                onClick={handleSignOut}
                 variant="destructive"
                 size="sm"
                 className="w-full mt-auto gap-2"
               >
                 <LogOut className="w-4 h-4" />
-                {t('signOut')}
+                {demoMode ? 'Exit Demo' : t('signOut')}
               </Button>
             </SheetContent>
           </Sheet>
         </div>
       </header>
 
-      {/* Main Content Viewport */}
       <main className="flex-1 lg:ml-[260px] p-4 lg:p-8 mb-20 lg:mb-0 max-w-7xl mx-auto w-full">
         <Outlet />
       </main>
 
-      {/* Floating Ask Rooted Assistant Trigger */}
       <button
         onClick={() => setAssistantOpen((p) => !p)}
         className="fixed bottom-20 right-4 lg:bottom-6 lg:right-6 z-40 bg-[#2F6B45] hover:bg-[#214D34] text-white p-3.5 rounded-full shadow-elevation flex items-center gap-2 transition-transform hover:scale-105"
@@ -205,10 +201,8 @@ export default function Layout() {
         <span className="hidden sm:inline font-bold text-xs">{t('askRooted')}</span>
       </button>
 
-      {/* Docked Assistant Side Panel */}
       <DockedAssistant open={assistantOpen} onClose={() => setAssistantOpen(false)} />
 
-      {/* Mobile Bottom Nav (<740px) */}
       <div className="lg:hidden fixed bottom-0 inset-x-0 bg-white border-t border-[#DCE3DC] z-30 px-2 py-1.5 flex justify-around items-center">
         {mobileNavFive.map((item) => {
           const active = location.pathname === item.path

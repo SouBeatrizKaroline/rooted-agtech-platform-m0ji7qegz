@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react'
-import { Sprout, ArrowRight, Eye, EyeOff } from 'lucide-react'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { Sprout, Eye, EyeOff, ArrowRight } from 'lucide-react'
 import { useAuth } from '@/hooks/use-auth'
 import { useI18n } from '@/hooks/use-i18n'
 import { Button } from '@/components/ui/button'
@@ -11,6 +11,7 @@ export default function Login() {
   const { signIn } = useAuth()
   const { t } = useI18n()
   const navigate = useNavigate()
+  const location = useLocation()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -18,20 +19,19 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState('')
 
+  const from = (location.state as { from?: string })?.from || '/app/dashboard'
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setErrorMsg('')
     setLoading(true)
-
     const { error } = await signIn(email, password)
     setLoading(false)
-
-    if (error) {
-      setErrorMsg("We couldn't sign you in — please check your details.")
-    } else {
-      navigate('/overview')
-    }
+    if (error) setErrorMsg("We couldn't sign you in — please check your details.")
+    else navigate(from, { replace: true })
   }
+
+  const handleDemo = () => navigate('/demo')
 
   return (
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
@@ -40,8 +40,10 @@ export default function Login() {
           <div className="w-12 h-12 rounded-2xl bg-[#DDEBDD] text-[#2F6B45] flex items-center justify-center mx-auto">
             <Sprout className="w-6 h-6" />
           </div>
-          <h1 className="text-2xl font-bold text-[#214D34]">{t('signIn')}</h1>
-          <p className="text-xs text-[#536057]">Welcome back to Rooted AgTech Platform</p>
+          <h1 className="text-2xl font-bold text-[#214D34]">Welcome back</h1>
+          <p className="text-xs text-[#536057]">
+            Sign in to continue planning smarter agricultural logistics with Rooted.
+          </p>
         </div>
 
         {errorMsg && (
@@ -62,7 +64,6 @@ export default function Login() {
               className="border-[#DCE3DC] focus-visible:ring-[#2F6B45]"
             />
           </div>
-
           <div className="space-y-1.5">
             <div className="flex justify-between items-center">
               <Label className="text-xs font-bold text-[#536057]">Password</Label>
@@ -88,7 +89,6 @@ export default function Login() {
               </button>
             </div>
           </div>
-
           <Button
             type="submit"
             disabled={loading}
@@ -103,6 +103,26 @@ export default function Login() {
           <Link to="/signup" className="font-bold text-[#2F6B45] hover:underline">
             {t('signUp')}
           </Link>
+        </div>
+
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-[#DCE3DC]" />
+          </div>
+          <div className="relative flex justify-center">
+            <span className="bg-white px-3 text-[10px] text-[#737D75] uppercase">or</span>
+          </div>
+        </div>
+
+        <div className="text-center space-y-3">
+          <p className="text-xs text-[#536057]">Want to explore Rooted first?</p>
+          <Button
+            onClick={handleDemo}
+            variant="outline"
+            className="w-full border-[#DCE3DC] text-[#214D34] hover:bg-[#F6F7F2] gap-2"
+          >
+            Try Demo <ArrowRight className="w-3.5 h-3.5" />
+          </Button>
         </div>
       </div>
     </div>
