@@ -12,7 +12,7 @@ const I18nContext = createContext<I18nContextType | undefined>(undefined)
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem('rooted_lang')
-    if (saved === 'pt' || saved === 'es' || saved === 'en') return saved
+    if (saved === 'pt' || saved === 'es' || saved === 'en' || saved === 'fr') return saved
     return 'en'
   })
 

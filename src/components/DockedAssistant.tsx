@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { useI18n } from '@/hooks/use-i18n'
 import { useVoice } from '@/hooks/use-voice'
+import { useSpeechmatics } from '@/hooks/use-speechmatics'
 import { sendAssistantChat } from '@/services/assistant'
 
 interface DockedAssistantProps {
@@ -44,8 +45,20 @@ export function DockedAssistant({ open, onClose, contextText }: DockedAssistantP
   )
   const scrollRef = useRef<HTMLDivElement>(null)
 
-  const { isListening, isSpeaking, startListening, stopListening, speak, stopSpeaking } =
-    useVoice(language)
+  const {
+    isSpeaking,
+    speak,
+    stopSpeaking,
+    isListening: webListening,
+    startListening: webStart,
+    stopListening: webStop,
+  } = useVoice(language)
+  const sm = useSpeechmatics(language)
+  const useSm = sm.available
+  const isListening = useSm ? sm.state === 'listening' : webListening
+  const isProcessing = useSm ? sm.state === 'processing' || sm.state === 'requesting' : false
+  const voiceError = useSm ? sm.error : ''
+  const partialText = useSm ? sm.partialTranscript : ''
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -193,6 +206,29 @@ export function DockedAssistant({ open, onClose, contextText }: DockedAssistantP
         )}
       </div>
 
+      {/* Voice status */}
+      {(isListening || isProcessing || voiceError || partialText) && (
+        <div className="px-3 py-1.5 bg-white border-t border-[#DCE3DC]">
+          {isListening && (
+            <p className="text-[11px] text-[#536057] flex items-center gap-1.5" aria-live="polite">
+              <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse shrink-0" />
+              <span className="truncate">{partialText || 'Listening…'}</span>
+            </p>
+          )}
+          {isProcessing && !isListening && (
+            <p className="text-[11px] text-[#536057] flex items-center gap-1.5" aria-live="polite">
+              <Sparkles className="w-3 h-3 text-[#2F6B45] animate-spin shrink-0" />
+              Processing…
+            </p>
+          )}
+          {voiceError && !isListening && !isProcessing && (
+            <p className="text-[11px] text-amber-700" role="alert">
+              {voiceError}
+            </p>
+          )}
+        </div>
+      )}
+
       {/* Suggested chips */}
       <div className="p-2 bg-white border-t border-[#DCE3DC] flex gap-1.5 overflow-x-auto no-scrollbar">
         {suggestedQuestions.map((q, idx) => (
@@ -209,15 +245,36 @@ export function DockedAssistant({ open, onClose, contextText }: DockedAssistantP
       {/* Input */}
       <div className="p-2.5 bg-white border-t border-[#DCE3DC] flex items-center gap-2">
         <button
-          onClick={() => (isListening ? stopListening() : startListening((t) => handleSend(t)))}
-          className={`p-2 rounded-xl border transition-colors ${
+          onClick={() => {
+            if (useSm) {
+              if (sm.state === 'listening') sm.stopListening()
+              else if (sm.state === 'error') sm.reset()
+              else if (sm.state === 'idle') sm.startListening((t) => handleSend(t))
+            } else {
+              if (webListening) webStop()
+              else webStart((t) => handleSend(t))
+            }
+          }}
+          disabled={isProcessing}
+          aria-label={isListening ? 'Stop voice input' : 'Start voice input'}
+          className={`p-2 rounded-xl border transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-[#2F6B45] focus-visible:ring-offset-1 ${
             isListening
               ? 'bg-rose-100 text-rose-700 border-rose-300 animate-pulse'
-              : 'bg-[#F6F7F2] text-[#536057] border-[#DCE3DC] hover:text-[#214D34]'
+              : isProcessing
+                ? 'bg-[#DDEBDD] text-[#214D34] border-[#DCE3DC]'
+                : voiceError
+                  ? 'bg-amber-50 text-amber-700 border-amber-300'
+                  : 'bg-[#F6F7F2] text-[#536057] border-[#DCE3DC] hover:text-[#214D34]'
           }`}
-          title="Voice input"
+          title={voiceError || 'Voice input'}
         >
-          {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+          {isListening ? (
+            <MicOff className="w-4 h-4" />
+          ) : isProcessing ? (
+            <Sparkles className="w-4 h-4 animate-spin" />
+          ) : (
+            <Mic className="w-4 h-4" />
+          )}
         </button>
 
         <Input
