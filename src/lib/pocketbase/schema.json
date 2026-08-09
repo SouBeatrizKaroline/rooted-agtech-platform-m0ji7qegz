@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-09T13:04:02.715Z",
+  "generatedAt": "2026-08-09T13:09:33.163Z",
   "collections": [
     {
       "name": "users",
@@ -29,25 +29,579 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate"
-          ]
+          "autodateTriggers": ["onCreate"]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": [
-            "onCreate",
-            "onUpdate"
-          ]
+          "autodateTriggers": ["onCreate", "onUpdate"]
         }
       ],
       "indexes": [
         "CREATE UNIQUE INDEX `idx_tokenKey__pb_users_auth_` ON `users` (`tokenKey`)",
         "CREATE UNIQUE INDEX `idx_email__pb_users_auth_` ON `users` (`email`) WHERE `email` != ''"
       ]
+    },
+    {
+      "name": "locations",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != ''",
+        "view": "@request.auth.id != ''",
+        "create": null,
+        "update": null,
+        "delete": null
+      },
+      "fields": [
+        {
+          "name": "name",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "type",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": [
+            "farm",
+            "warehouse",
+            "distribution_center",
+            "processing_facility",
+            "port",
+            "buyer",
+            "custom"
+          ]
+        },
+        {
+          "name": "address",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "lat",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "lng",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": ["CREATE INDEX idx_locations_type ON locations (type)"]
+    },
+    {
+      "name": "shipments",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != '' && user = @request.auth.id",
+        "view": "@request.auth.id != '' && user = @request.auth.id",
+        "create": "@request.auth.id != ''",
+        "update": "@request.auth.id != '' && user = @request.auth.id",
+        "delete": "@request.auth.id != '' && user = @request.auth.id"
+      },
+      "fields": [
+        {
+          "name": "user",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "users"
+        },
+        {
+          "name": "cargo_type",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["corn", "soybeans", "wheat", "fruits", "vegetables", "other"]
+        },
+        {
+          "name": "cargo_detail",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "origin_name",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "origin_lat",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "origin_lng",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "destination_name",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "destination_lat",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "destination_lng",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "destination_type",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": [
+            "warehouse",
+            "distribution_center",
+            "processing_facility",
+            "port",
+            "buyer",
+            "custom"
+          ]
+        },
+        {
+          "name": "vehicle_type",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["small_truck", "medium_truck", "large_truck", "other"]
+        },
+        {
+          "name": "cargo_weight_t",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "dimensions",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "preferred_departure",
+          "type": "date",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "constraints",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["planned", "analyzed", "in_transit", "delayed", "delivered"]
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_shipments_user ON shipments (user)",
+        "CREATE INDEX idx_shipments_status ON shipments (status)"
+      ]
+    },
+    {
+      "name": "routes",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != '' && shipment.user = @request.auth.id",
+        "view": "@request.auth.id != '' && shipment.user = @request.auth.id",
+        "create": "@request.auth.id != ''",
+        "update": "@request.auth.id != ''",
+        "delete": "@request.auth.id != ''"
+      },
+      "fields": [
+        {
+          "name": "shipment",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "shipments"
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "is_recommended",
+          "type": "bool",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "distance_km",
+          "type": "number",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "travel_time_min",
+          "type": "number",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "estimated_cost",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "risk_level",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["low", "medium", "high"]
+        },
+        {
+          "name": "restrictions",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "risk_areas",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "considerations",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "confidence_level",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "summary_text",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": ["CREATE INDEX idx_routes_shipment ON routes (shipment)"]
+    },
+    {
+      "name": "alerts",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != '' && user = @request.auth.id",
+        "view": "@request.auth.id != '' && user = @request.auth.id",
+        "create": "@request.auth.id != ''",
+        "update": "@request.auth.id != '' && user = @request.auth.id",
+        "delete": "@request.auth.id != '' && user = @request.auth.id"
+      },
+      "fields": [
+        {
+          "name": "user",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "users"
+        },
+        {
+          "name": "shipment",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "shipments"
+        },
+        {
+          "name": "route",
+          "type": "relation",
+          "required": false,
+          "system": false,
+          "collectionRef": "routes"
+        },
+        {
+          "name": "category",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": [
+            "road_restriction",
+            "route_disruption",
+            "capacity_issue",
+            "potential_delay",
+            "high_risk_route",
+            "normal"
+          ]
+        },
+        {
+          "name": "severity",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["normal", "attention", "critical"]
+        },
+        {
+          "name": "label",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "explanation",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "recommended_action",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": ["CREATE INDEX idx_alerts_user ON alerts (user)"]
+    },
+    {
+      "name": "storage_options",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != ''",
+        "view": "@request.auth.id != ''",
+        "create": null,
+        "update": null,
+        "delete": null
+      },
+      "fields": [
+        {
+          "name": "name",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "type",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["warehouse", "silo", "cold_storage", "distribution_center"]
+        },
+        {
+          "name": "lat",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "lng",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "address",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "capacity_t",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "available_t",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "distance_km",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "suitability",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["low", "medium", "high"]
+        },
+        {
+          "name": "consideration",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "cargo_types",
+          "type": "select",
+          "required": false,
+          "system": false,
+          "selectValues": ["corn", "soybeans", "wheat", "fruits", "vegetables", "other"]
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": ["CREATE INDEX idx_storage_type ON storage_options (type)"]
+    },
+    {
+      "name": "assistant_messages",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != '' && user = @request.auth.id",
+        "view": "@request.auth.id != '' && user = @request.auth.id",
+        "create": "@request.auth.id != ''",
+        "update": "@request.auth.id != '' && user = @request.auth.id",
+        "delete": "@request.auth.id != '' && user = @request.auth.id"
+      },
+      "fields": [
+        {
+          "name": "user",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "users"
+        },
+        {
+          "name": "role",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["user", "assistant"]
+        },
+        {
+          "name": "content",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "context",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "language",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": ["CREATE INDEX idx_asst_msg_user ON assistant_messages (user)"]
     }
   ]
 }
