@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Bot, Send, Mic, MicOff, ToggleLeft, ToggleRight, Sparkles } from 'lucide-react'
+import { Bot, Send, Mic, MicOff, ToggleLeft, ToggleRight, Sparkles, Globe } from 'lucide-react'
 import { useI18n } from '@/hooks/use-i18n'
 import { useVoice } from '@/hooks/use-voice'
 import { sendAssistantChat, getAssistantMessages, AssistantMessageItem } from '@/services/assistant'
@@ -14,6 +14,7 @@ export default function AssistantPage() {
   const [simpleMode, setSimpleMode] = useState(
     () => localStorage.getItem('rooted_simple_mode') === 'true',
   )
+  const [webAccess, setWebAccess] = useState<{ used: boolean; source: string } | null>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
 
   const { isListening, startListening, stopListening } = useVoice(language)
@@ -44,6 +45,9 @@ export default function AssistantPage() {
     const text = queryText || input.trim()
     if (!text || loading) return
 
+    const hasUrl = /https?:\/\/[^\s<>"'\\)]+/i.test(text)
+    setWebAccess(hasUrl ? { used: true, source: '' } : null)
+
     setInput('')
     const tempUserMsg: AssistantMessageItem = {
       id: Date.now().toString(),
@@ -64,6 +68,11 @@ export default function AssistantPage() {
         simple_language: simpleMode,
       })
 
+      setWebAccess({
+        used: !!res.web_access_used,
+        source: res.web_source || '',
+      })
+
       const tempAsstMsg: AssistantMessageItem = {
         id: (Date.now() + 1).toString(),
         user: 'assistant',
@@ -72,6 +81,7 @@ export default function AssistantPage() {
           res.reply || 'Rooted advises prioritizing paved primary highways for heavy corn loads.',
         language,
         created: new Date().toISOString(),
+        web_source: res.web_source || undefined,
       }
       setMessages((prev) => [...prev, tempAsstMsg])
     } catch (_) {
@@ -126,7 +136,10 @@ export default function AssistantPage() {
       {/* Messages */}
       <div ref={scrollRef} className="flex-1 p-4 overflow-y-auto space-y-4 bg-[#F6F7F2]">
         {messages.map((m) => (
-          <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+          <div
+            key={m.id}
+            className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}
+          >
             <div
               className={`max-w-[80%] p-3.5 rounded-2xl text-xs sm:text-sm leading-relaxed ${
                 m.role === 'user'
@@ -136,13 +149,26 @@ export default function AssistantPage() {
             >
               {m.content}
             </div>
+            {m.role === 'assistant' && m.web_source && (
+              <span className="flex items-center gap-1 mt-1 text-[10px] text-[#536057] px-1">
+                <Globe className="w-3 h-3" />
+                Source: {m.web_source}
+              </span>
+            )}
           </div>
         ))}
-
         {loading && (
-          <div className="flex items-center gap-2 p-3 bg-white border border-[#DCE3DC] rounded-2xl text-xs text-[#536057] w-max">
-            <Sparkles className="w-4 h-4 text-[#2F6B45] animate-spin" />
-            <span>Formulating advice…</span>
+          <div className="flex flex-col gap-1.5 p-3 bg-white border border-[#DCE3DC] rounded-2xl text-xs text-[#536057] w-max">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-[#2F6B45] animate-spin" />
+              <span>Formulating advice…</span>
+            </div>
+            {webAccess?.used && (
+              <div className="flex items-center gap-1.5 text-[#2F6B45]">
+                <Globe className="w-3.5 h-3.5" />
+                <span>Using web access</span>
+              </div>
+            )}
           </div>
         )}
       </div>

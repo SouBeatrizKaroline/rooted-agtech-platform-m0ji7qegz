@@ -8,6 +8,7 @@ export interface AssistantMessageItem {
   context?: string
   language: string
   created: string
+  web_source?: string
 }
 
 export interface AssistantChatPayload {
@@ -20,12 +21,18 @@ export interface AssistantChatPayload {
 export const getAssistantMessages = () =>
   pb.collection('assistant_messages').getFullList<AssistantMessageItem>({ sort: 'created' })
 
+export interface AssistantChatResponse {
+  reply: string
+  language: string
+  simple_language: boolean
+  web_access_used?: boolean
+  web_source?: string
+  web_error?: string
+}
+
 export const sendAssistantChat = (payload: AssistantChatPayload) =>
-  pb.send<{ reply: string; language: string; simple_language: boolean }>(
-    '/backend/v1/assistant/chat',
-    {
-      method: 'POST',
-      body: JSON.stringify(payload),
-      headers: { 'Content-Type': 'application/json' },
-    },
-  )
+  pb.send<AssistantChatResponse>('/backend/v1/assistant/chat', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+    headers: { 'Content-Type': 'application/json' },
+  })

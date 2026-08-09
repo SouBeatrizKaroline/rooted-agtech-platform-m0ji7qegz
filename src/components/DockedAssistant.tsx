@@ -11,6 +11,7 @@ import {
   ToggleLeft,
   ToggleRight,
   CornerDownLeft,
+  Globe,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -27,7 +28,9 @@ interface DockedAssistantProps {
 
 export function DockedAssistant({ open, onClose, contextText }: DockedAssistantProps) {
   const { t, language } = useI18n()
-  const [messages, setMessages] = useState<Array<{ role: 'user' | 'assistant'; text: string }>>([
+  const [messages, setMessages] = useState<
+    Array<{ role: 'user' | 'assistant'; text: string; web_source?: string }>
+  >([
     {
       role: 'assistant',
       text: 'Hello! I am Rooted. How can I help with your agricultural shipment today?',
@@ -35,6 +38,7 @@ export function DockedAssistant({ open, onClose, contextText }: DockedAssistantP
   ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [webAccess, setWebAccess] = useState<{ used: boolean; source: string } | null>(null)
   const [simpleMode, setSimpleMode] = useState(
     () => localStorage.getItem('rooted_simple_mode') === 'true',
   )
@@ -55,6 +59,9 @@ export function DockedAssistant({ open, onClose, contextText }: DockedAssistantP
     const query = userQuery || input.trim()
     if (!query || loading) return
 
+    const hasUrl = /https?:\/\/[^\s<>"'\\)]+/i.test(query)
+    setWebAccess(hasUrl ? { used: true, source: '' } : null)
+
     setInput('')
     setMessages((prev) => [...prev, { role: 'user', text: query }])
     setLoading(true)
@@ -67,7 +74,14 @@ export function DockedAssistant({ open, onClose, contextText }: DockedAssistantP
         simple_language: simpleMode,
       })
       const reply = res.reply || 'Rooted recommends using Route A for compliant transport.'
-      setMessages((prev) => [...prev, { role: 'assistant', text: reply }])
+      setWebAccess({
+        used: !!res.web_access_used,
+        source: res.web_source || '',
+      })
+      setMessages((prev) => [
+        ...prev,
+        { role: 'assistant', text: reply, web_source: res.web_source || undefined },
+      ])
       if (isSpeaking) speak(reply)
     } catch (_) {
       setMessages((prev) => [
@@ -154,13 +168,27 @@ export function DockedAssistant({ open, onClose, contextText }: DockedAssistantP
             >
               {m.text}
             </div>
+            {m.role === 'assistant' && m.web_source && (
+              <span className="flex items-center gap-1 mt-1 text-[10px] text-[#536057] px-1">
+                <Globe className="w-2.5 h-2.5" />
+                Source: {m.web_source}
+              </span>
+            )}
           </div>
         ))}
 
         {loading && (
-          <div className="flex items-center gap-2 p-3 bg-white border border-[#DCE3DC] rounded-2xl text-xs text-[#536057] w-max">
-            <Sparkles className="w-3.5 h-3.5 text-[#2F6B45] animate-spin" />
-            <span>Rooted is formulating advice…</span>
+          <div className="flex flex-col gap-1.5 p-3 bg-white border border-[#DCE3DC] rounded-2xl text-xs text-[#536057] w-max">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-3.5 h-3.5 text-[#2F6B45] animate-spin" />
+              <span>Rooted is formulating advice…</span>
+            </div>
+            {webAccess?.used && (
+              <div className="flex items-center gap-1.5 text-[#2F6B45]">
+                <Globe className="w-3 h-3" />
+                <span>Using web access</span>
+              </div>
+            )}
           </div>
         )}
       </div>
