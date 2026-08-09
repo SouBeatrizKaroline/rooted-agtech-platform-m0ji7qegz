@@ -46,7 +46,7 @@ export default function RouteResults() {
       </div>
 
       <div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-[#214D34]">
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-[#214D34] break-words">
           Route Analysis: {shipment?.origin_name} → {shipment?.destination_name}
         </h1>
         <p className="text-xs text-[#536057] mt-1">
@@ -69,7 +69,7 @@ export default function RouteResults() {
             <strong>{t('whyRecommended')}</strong> {recRoute.summary_text}
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 text-center">
             <div className="p-2.5 rounded-xl bg-[#F6F7F2]">
               <span className="text-[10px] text-[#737D75] font-bold uppercase">Distance</span>
               <p className="font-extrabold text-sm text-[#214D34]">{recRoute.distance_km} km</p>

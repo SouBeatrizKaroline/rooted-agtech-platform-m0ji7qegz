@@ -28,13 +28,13 @@ export default function StoragePage() {
       {loading ? (
         <div className="p-8 text-center text-xs text-[#536057]">Loading storage options…</div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           {storage.map((s) => (
             <div
               key={s.id}
-              className="p-5 bg-white border border-[#DCE3DC] rounded-2xl shadow-subtle space-y-3"
+              className="p-4 sm:p-5 bg-white border border-[#DCE3DC] rounded-2xl shadow-subtle space-y-3"
             >
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-2 flex-wrap">
                 <span className="text-xs font-bold text-[#214D34] uppercase tracking-wider">
                   {s.type}
                 </span>
@@ -55,7 +55,7 @@ export default function StoragePage() {
                 "{s.consideration}"
               </p>
 
-              <div className="grid grid-cols-2 gap-2 text-xs text-[#536057] pt-2 border-t border-[#DCE3DC]">
+              <div className="grid grid-cols-2 gap-2 text-xs text-[#536057] pt-2 border-t border-[#DCE3DC] break-words">
                 <div>
                   Total Capacity: <strong>{s.capacity_t?.toLocaleString()} t</strong>
                 </div>

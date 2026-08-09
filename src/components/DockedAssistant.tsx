@@ -159,7 +159,7 @@ export function DockedAssistant({ open, onClose, contextText }: DockedAssistantP
   ]
 
   return (
-    <div className="fixed bottom-20 right-4 lg:bottom-6 lg:right-6 w-[calc(100vw-2rem)] sm:w-[380px] h-[520px] bg-white border border-[#DCE3DC] rounded-2xl shadow-elevation z-50 flex flex-col overflow-hidden animate-slide-up">
+    <div className="fixed bottom-20 right-4 lg:bottom-6 lg:right-6 w-[calc(100vw-2rem)] sm:w-[380px] max-w-[380px] h-[min(520px,calc(100dvh-7rem))] bg-white border border-[#DCE3DC] rounded-2xl shadow-elevation z-50 flex flex-col overflow-hidden animate-slide-up">
       {/* Header */}
       <div className="p-3.5 bg-[#214D34] text-white flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -206,7 +206,7 @@ export function DockedAssistant({ open, onClose, contextText }: DockedAssistantP
             className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}
           >
             <div
-              className={`max-w-[85%] p-3 rounded-2xl text-xs leading-relaxed ${
+              className={`max-w-[85%] p-3 rounded-2xl text-xs leading-relaxed break-words overflow-wrap-anywhere ${
                 m.role === 'user'
                   ? 'bg-[#2F6B45] text-white rounded-br-none'
                   : 'bg-white border border-[#DCE3DC] text-[#17221A] rounded-bl-none shadow-subtle'
@@ -219,7 +219,6 @@ export function DockedAssistant({ open, onClose, contextText }: DockedAssistantP
             )}
           </div>
         ))}
-
         {loading && (
           <div className="flex flex-col gap-1.5 p-3 bg-white border border-[#DCE3DC] rounded-2xl text-xs text-[#536057] w-max">
             <div className="flex items-center gap-2">
@@ -264,12 +263,12 @@ export function DockedAssistant({ open, onClose, contextText }: DockedAssistantP
       )}
 
       {/* Suggested chips */}
-      <div className="p-2 bg-white border-t border-[#DCE3DC] flex gap-1.5 overflow-x-auto no-scrollbar">
+      <div className="p-2 bg-white border-t border-[#DCE3DC] flex gap-1.5 overflow-x-auto no-scrollbar flex-shrink-0">
         {suggestedQuestions.map((q, idx) => (
           <button
             key={idx}
             onClick={() => handleSend(q)}
-            className="text-[11px] whitespace-nowrap px-2.5 py-1 rounded-full bg-[#F6F7F2] hover:bg-[#DDEBDD] border border-[#DCE3DC] text-[#536057] hover:text-[#214D34] transition-colors"
+            className="text-[11px] whitespace-nowrap px-2.5 py-1.5 rounded-full bg-[#F6F7F2] hover:bg-[#DDEBDD] border border-[#DCE3DC] text-[#536057] hover:text-[#214D34] transition-colors flex-shrink-0"
           >
             {q}
           </button>

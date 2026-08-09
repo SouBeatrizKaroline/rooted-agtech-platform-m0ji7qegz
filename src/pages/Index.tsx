@@ -17,16 +17,18 @@ export default function Index() {
   const { t } = useI18n()
 
   return (
-    <div className="space-y-16 pb-16">
-      <section className="pt-8 pb-12 px-4 max-w-6xl mx-auto text-center space-y-6">
+    <div className="space-y-12 sm:space-y-16 pb-16">
+      <section className="pt-6 sm:pt-8 pb-8 sm:pb-12 px-4 max-w-6xl mx-auto text-center space-y-4 sm:space-y-6">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#DDEBDD] border border-[#2F6B45]/20 text-[#214D34] text-xs font-semibold">
           <Sprout className="w-3.5 h-3.5 text-[#2F6B45]" />
           <span>Agricultural Logistics & Decision Platform</span>
         </div>
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[#214D34] tracking-tight leading-tight">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-[#214D34] tracking-tight leading-tight">
           {t('tagline')}
         </h1>
-        <p className="max-w-2xl mx-auto text-base sm:text-lg text-[#536057]">{t('subtitle')}</p>
+        <p className="max-w-2xl mx-auto text-sm sm:text-base lg:text-lg text-[#536057]">
+          {t('subtitle')}
+        </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
           <Button
             asChild
@@ -48,8 +50,8 @@ export default function Index() {
           </Button>
         </div>
 
-        <div className="mt-10 bg-white border border-[#DCE3DC] rounded-2xl p-4 sm:p-6 shadow-elevation max-w-4xl mx-auto text-left">
-          <div className="flex items-center justify-between border-b border-[#DCE3DC] pb-3 mb-4">
+        <div className="mt-8 sm:mt-10 bg-white border border-[#DCE3DC] rounded-2xl p-3 sm:p-4 lg:p-6 shadow-elevation max-w-4xl mx-auto text-left">
+          <div className="flex items-center justify-between border-b border-[#DCE3DC] pb-3 mb-3 sm:mb-4 gap-2">
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-emerald-500" />
               <span className="font-bold text-sm text-[#214D34]">Recommended Route Analysis</span>
@@ -58,22 +60,22 @@ export default function Index() {
               12% Fuel Savings
             </span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-3.5 rounded-xl bg-[#F6F7F2] border border-[#DCE3DC]">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+            <div className="p-3 sm:p-3.5 rounded-xl bg-[#F6F7F2] border border-[#DCE3DC]">
               <span className="text-[10px] text-[#737D75] uppercase font-bold">
                 Recommended Path
               </span>
               <p className="font-bold text-sm text-[#214D34] mt-0.5">Highway BR-060 Bypass</p>
               <p className="text-xs text-[#536057] mt-2">64 km · 75 min · ~$420 est.</p>
             </div>
-            <div className="p-3.5 rounded-xl bg-[#F6F7F2] border border-[#DCE3DC]">
+            <div className="p-3 sm:p-3.5 rounded-xl bg-[#F6F7F2] border border-[#DCE3DC]">
               <span className="text-[10px] text-[#737D75] uppercase font-bold">
                 Road Restriction
               </span>
               <p className="font-bold text-sm text-amber-800 mt-0.5">Weigh Station Km 22</p>
               <p className="text-xs text-[#536057] mt-2">Compliant axle limit for 32t truck</p>
             </div>
-            <div className="p-3.5 rounded-xl bg-[#F6F7F2] border border-[#DCE3DC]">
+            <div className="p-3 sm:p-3.5 rounded-xl bg-[#F6F7F2] border border-[#DCE3DC]">
               <span className="text-[10px] text-[#737D75] uppercase font-bold">
                 Destination Capacity
               </span>
@@ -84,15 +86,15 @@ export default function Index() {
         </div>
       </section>
 
-      <section className="bg-white border-y border-[#DCE3DC] py-14 px-4">
-        <div className="max-w-5xl mx-auto space-y-8 text-center">
+      <section className="bg-white border-y border-[#DCE3DC] py-10 sm:py-14 px-4">
+        <div className="max-w-5xl mx-auto space-y-6 sm:space-y-8 text-center">
           <div>
             <h2 className="text-2xl sm:text-3xl font-bold text-[#214D34]">
               {t('howItWorksTitle')}
             </h2>
             <p className="text-sm text-[#536057] mt-1">{t('howItWorksDesc')}</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 text-left">
             {[
               { title: t('step1'), desc: t('step1Desc'), icon: Truck },
               { title: t('step2'), desc: t('step2Desc'), icon: Route },
@@ -114,11 +116,13 @@ export default function Index() {
         </div>
       </section>
 
-      <section className="max-w-5xl mx-auto px-4 space-y-8">
+      <section className="max-w-5xl mx-auto px-4 space-y-6 sm:space-y-8">
         <div className="text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold text-[#214D34]">{t('benefitsTitle')}</h2>
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#214D34]">
+            {t('benefitsTitle')}
+          </h2>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {[
             { title: t('benefit1'), desc: t('benefit1Desc') },
             { title: t('benefit2'), desc: t('benefit2Desc') },
@@ -140,7 +144,7 @@ export default function Index() {
       </section>
 
       <section className="max-w-4xl mx-auto px-4">
-        <div className="bg-[#214D34] text-white rounded-2xl p-8 space-y-6 text-center">
+        <div className="bg-[#214D34] text-white rounded-2xl p-6 sm:p-8 space-y-4 sm:space-y-6 text-center">
           <div className="w-14 h-14 rounded-2xl bg-[#2F6B45] flex items-center justify-center mx-auto">
             <Bot className="w-7 h-7" />
           </div>
@@ -166,10 +170,10 @@ export default function Index() {
         </div>
       </section>
 
-      <section className="bg-[#214D34] text-white py-14 px-4">
+      <section className="bg-[#214D34] text-white py-10 sm:py-14 px-4">
         <div className="max-w-5xl mx-auto space-y-6 text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold">{t('peopleTitle')}</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 text-left">
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold">{t('peopleTitle')}</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 text-left">
             {[
               { role: t('farmerRole'), line: t('farmerLine') },
               { role: t('agriBizRole'), line: t('agriBizLine') },
@@ -188,8 +192,10 @@ export default function Index() {
         </div>
       </section>
 
-      <section className="max-w-4xl mx-auto px-4 text-center space-y-6">
-        <h2 className="text-3xl font-bold text-[#214D34]">Let's make your next shipment easier.</h2>
+      <section className="max-w-4xl mx-auto px-4 text-center space-y-4 sm:space-y-6">
+        <h2 className="text-2xl sm:text-3xl font-bold text-[#214D34]">
+          Let's make your next shipment easier.
+        </h2>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
           <Button
             asChild

@@ -37,12 +37,12 @@ export default function RoutesList() {
               key={r.id}
               className="p-4 bg-white border border-[#DCE3DC] rounded-2xl shadow-subtle space-y-2"
             >
-              <div className="flex items-center justify-between">
-                <span className="font-bold text-sm text-[#214D34]">{r.name}</span>
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <span className="font-bold text-sm text-[#214D34] break-words">{r.name}</span>
                 {r.is_recommended && <BadgeTag type="recommendation" label="Recommended" />}
               </div>
-              <p className="text-xs text-[#536057]">{r.summary_text}</p>
-              <div className="pt-2 border-t border-[#DCE3DC] flex justify-between text-xs text-[#737D75]">
+              <p className="text-xs text-[#536057] break-words">{r.summary_text}</p>
+              <div className="pt-2 border-t border-[#DCE3DC] flex flex-wrap justify-between gap-2 text-xs text-[#737D75]">
                 <span>Distance: {r.distance_km} km</span>
                 <span>Travel Time: {r.travel_time_min} min</span>
                 <span>Risk: {r.risk_level}</span>

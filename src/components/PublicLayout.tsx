@@ -16,15 +16,19 @@ export default function PublicLayout() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F6F7F2] text-[#17221A]">
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-[#DCE3DC] px-4 lg:px-8 py-3 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2.5 group">
-          <div className="w-9 h-9 rounded-xl bg-[#2F6B45] text-white flex items-center justify-center shadow-subtle group-hover:bg-[#214D34] transition-colors">
+      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-[#DCE3DC] px-3 sm:px-4 lg:px-8 py-3 flex items-center justify-between safe-area-top">
+        <Link
+          to="/"
+          className="flex items-center gap-2.5 group flex-shrink-0"
+          aria-label="Rooted home"
+        >
+          <div className="w-9 h-9 rounded-xl bg-[#2F6B45] text-white flex items-center justify-center shadow-subtle group-hover:bg-[#214D34] transition-colors flex-shrink-0">
             <Sprout className="w-5 h-5" />
           </div>
-          <span className="text-xl font-bold tracking-tight text-[#214D34]">Rooted</span>
+          <span className="text-lg sm:text-xl font-bold tracking-tight text-[#214D34]">Rooted</span>
         </Link>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -62,7 +66,7 @@ export default function PublicLayout() {
             <Button asChild size="sm" className="bg-[#2F6B45] hover:bg-[#214D34] text-white gap-2">
               <Link to="/app/dashboard">
                 <LayoutDashboard className="w-3.5 h-3.5" />
-                Dashboard
+                <span className="hidden sm:inline">Dashboard</span>
               </Link>
             </Button>
           ) : (
@@ -76,7 +80,10 @@ export default function PublicLayout() {
                 <Link to="/login">{t('signIn')}</Link>
               </Button>
               <Button asChild size="sm" className="bg-[#2F6B45] hover:bg-[#214D34] text-white">
-                <Link to="/signup">{t('getStarted')}</Link>
+                <Link to="/signup">
+                  <span className="hidden sm:inline">{t('getStarted')}</span>
+                  <span className="sm:hidden">Start</span>
+                </Link>
               </Button>
             </>
           )}
@@ -87,8 +94,8 @@ export default function PublicLayout() {
         <Outlet />
       </main>
 
-      <footer className="bg-white border-t border-[#DCE3DC] py-10 px-4 lg:px-8">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-sm text-[#737D75]">
+      <footer className="bg-white border-t border-[#DCE3DC] py-8 sm:py-10 px-4 lg:px-8 safe-area-bottom">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-6 text-sm text-[#737D75]">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-lg bg-[#2F6B45] text-white flex items-center justify-center text-xs">
               <Sprout className="w-3.5 h-3.5" />

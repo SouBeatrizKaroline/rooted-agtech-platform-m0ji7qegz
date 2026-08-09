@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { InteractiveMap } from '@/components/map/InteractiveMap'
 import { useI18n } from '@/hooks/use-i18n'
 
@@ -14,7 +13,7 @@ export default function MapPage() {
         </p>
       </div>
 
-      <InteractiveMap height="h-[calc(100vh-220px)]" />
+      <InteractiveMap height="h-[calc(100dvh-280px)] min-h-[300px]" />
     </div>
   )
 }

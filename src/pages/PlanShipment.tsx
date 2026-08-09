@@ -71,19 +71,20 @@ export default function PlanShipment() {
   ]
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8 animate-fade-in">
+    <div className="max-w-3xl mx-auto space-y-4 sm:space-y-8 animate-fade-in min-w-0">
       <div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-[#214D34]">{t('planShipment')}</h1>
         <p className="text-xs sm:text-sm text-[#536057] mt-1">Guided agricultural route planner</p>
       </div>
 
       {/* Step Indicator */}
-      <div className="flex items-center justify-between bg-white p-3 rounded-2xl border border-[#DCE3DC]">
+      <div className="flex items-center justify-between bg-white p-2 sm:p-3 rounded-2xl border border-[#DCE3DC] gap-1">
         {[1, 2, 3, 4, 5].map((s) => (
           <button
             key={s}
             onClick={() => s < step && setStep(s)}
-            className={`flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-lg transition-colors ${
+            aria-label={`Step ${s}${step > s ? ' - completed' : step === s ? ' - current' : ''}`}
+            className={`flex items-center gap-1 text-xs font-bold px-2 sm:px-3 py-1.5 rounded-lg transition-colors min-h-[36px] flex-1 justify-center ${
               step === s
                 ? 'bg-[#2F6B45] text-white'
                 : step > s
@@ -98,18 +99,18 @@ export default function PlanShipment() {
       </div>
 
       {/* Step Contents */}
-      <div className="bg-white border border-[#DCE3DC] rounded-2xl p-6 shadow-elevation space-y-6">
+      <div className="bg-white border border-[#DCE3DC] rounded-2xl p-4 sm:p-6 shadow-elevation space-y-6">
         {step === 1 && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-[#214D34]">
               Step 1 — What are you transporting?
             </h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
               {cargoOptions.map((c) => (
                 <button
                   key={c.id}
                   onClick={() => setCargoType(c.id)}
-                  className={`p-4 rounded-xl border text-center transition-all ${
+                  className={`p-3 sm:p-4 rounded-xl border text-center transition-colors duration-150 min-h-[48px] ${
                     cargoType === c.id
                       ? 'border-[#2F6B45] bg-[#DDEBDD] text-[#214D34] font-bold'
                       : 'border-[#DCE3DC] text-[#536057] hover:bg-[#F6F7F2]'

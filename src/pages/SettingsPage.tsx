@@ -69,7 +69,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8 animate-fade-in">
+    <div className="max-w-2xl mx-auto space-y-6 sm:space-y-8 animate-fade-in min-w-0">
       <div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-[#214D34]">{t('navSettings')}</h1>
         <p className="text-xs sm:text-sm text-[#536057] mt-1">
@@ -77,9 +77,9 @@ export default function SettingsPage() {
         </p>
       </div>
 
-      <div className="p-5 bg-white border border-[#DCE3DC] rounded-2xl space-y-4 shadow-subtle">
+      <div className="p-4 sm:p-5 bg-white border border-[#DCE3DC] rounded-2xl space-y-4 shadow-subtle">
         <h3 className="font-bold text-base text-[#214D34]">User Profile</h3>
-        <div className="grid grid-cols-2 gap-4 text-xs text-[#536057]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs text-[#536057]">
           <div>
             Name: <strong>{demoMode ? 'Demo Explorer' : user?.name || 'Manager'}</strong>
           </div>

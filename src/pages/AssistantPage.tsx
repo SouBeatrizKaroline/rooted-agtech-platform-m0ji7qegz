@@ -156,7 +156,7 @@ export default function AssistantPage() {
   }
 
   return (
-    <div className="h-[calc(100vh-140px)] flex flex-col bg-white border border-[#DCE3DC] rounded-2xl overflow-hidden shadow-elevation animate-fade-in">
+    <div className="h-[calc(100dvh-200px)] min-h-[400px] flex flex-col bg-white border border-[#DCE3DC] rounded-2xl overflow-hidden shadow-elevation animate-fade-in">
       {/* Header */}
       <div className="p-4 bg-[#214D34] text-white flex items-center justify-between">
         <div className="flex items-center gap-3">
@@ -180,14 +180,14 @@ export default function AssistantPage() {
       </div>
 
       {/* Messages */}
-      <div ref={scrollRef} className="flex-1 p-4 overflow-y-auto space-y-4 bg-[#F6F7F2]">
+      <div ref={scrollRef} className="flex-1 p-4 overflow-y-auto space-y-4 bg-[#F6F7F2] min-h-0">
         {messages.map((m) => (
           <div
             key={m.id}
             className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}
           >
             <div
-              className={`max-w-[80%] p-3.5 rounded-2xl text-xs sm:text-sm leading-relaxed ${
+              className={`max-w-[85%] sm:max-w-[80%] p-3.5 rounded-2xl text-xs sm:text-sm leading-relaxed break-words ${
                 m.role === 'user'
                   ? 'bg-[#2F6B45] text-white rounded-br-none'
                   : 'bg-white border border-[#DCE3DC] text-[#17221A] rounded-bl-none shadow-subtle'
@@ -247,7 +247,7 @@ export default function AssistantPage() {
       )}
 
       {/* Input */}
-      <div className="p-3 bg-white border-t border-[#DCE3DC] flex items-center gap-2">
+      <div className="p-3 bg-white border-t border-[#DCE3DC] flex items-center gap-2 flex-shrink-0">
         <button
           onClick={() => {
             if (useSm) {
@@ -261,7 +261,7 @@ export default function AssistantPage() {
           }}
           disabled={isProcessing}
           aria-label={isListening ? 'Stop voice input' : 'Start voice input'}
-          className={`p-2.5 rounded-xl border transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-[#2F6B45] focus-visible:ring-offset-1 ${
+          className={`p-2.5 rounded-xl border transition-colors shrink-0 min-h-[44px] min-w-[44px] flex items-center justify-center focus-visible:ring-2 focus-visible:ring-[#2F6B45] focus-visible:ring-offset-1 ${
             isListening
               ? 'bg-rose-100 text-rose-700 border-rose-300 animate-pulse'
               : isProcessing

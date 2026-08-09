@@ -84,37 +84,44 @@ export function InteractiveMap({
       <div className="absolute inset-0 opacity-40 bg-[radial-gradient(#2F6B45_1px,transparent_1px)] [background-size:16px_16px]" />
 
       {/* Layer Toggles */}
-      <div className="absolute top-3 left-3 z-10 bg-white/95 backdrop-blur-sm border border-[#DCE3DC] rounded-xl p-1.5 flex gap-1 text-[11px] shadow-subtle">
+      <div className="absolute top-3 left-3 z-10 bg-white/95 backdrop-blur-sm border border-[#DCE3DC] rounded-xl p-1.5 flex gap-1 text-[11px] shadow-subtle flex-wrap max-w-[calc(100%-1.5rem)]">
         <button
           onClick={() => setActiveLayers((p) => ({ ...p, routes: !p.routes }))}
-          className={`px-2 py-1 rounded-lg font-medium transition-colors ${
+          aria-pressed={activeLayers.routes}
+          className={`px-2.5 py-1.5 rounded-lg font-medium transition-colors min-h-[32px] ${
             activeLayers.routes ? 'bg-[#2F6B45] text-white' : 'text-[#536057] hover:bg-[#F6F7F2]'
           }`}
         >
-          Rotas
+          Routes
         </button>
         <button
           onClick={() => setActiveLayers((p) => ({ ...p, restrictions: !p.restrictions }))}
-          className={`px-2 py-1 rounded-lg font-medium transition-colors ${
+          aria-pressed={activeLayers.restrictions}
+          className={`px-2.5 py-1.5 rounded-lg font-medium transition-colors min-h-[32px] ${
             activeLayers.restrictions
               ? 'bg-[#2F6B45] text-white'
               : 'text-[#536057] hover:bg-[#F6F7F2]'
           }`}
         >
-          Restrições
+          Alerts
         </button>
         <button
           onClick={() => setActiveLayers((p) => ({ ...p, storage: !p.storage }))}
-          className={`px-2 py-1 rounded-lg font-medium transition-colors ${
+          aria-pressed={activeLayers.storage}
+          className={`px-2.5 py-1.5 rounded-lg font-medium transition-colors min-h-[32px] ${
             activeLayers.storage ? 'bg-[#2F6B45] text-white' : 'text-[#536057] hover:bg-[#F6F7F2]'
           }`}
         >
-          Silos
+          Storage
         </button>
       </div>
 
       {/* Map Graphic Viewport */}
-      <svg className="absolute inset-0 w-full h-full">
+      <svg
+        className="absolute inset-0 w-full h-full"
+        preserveAspectRatio="none"
+        viewBox="0 0 600 400"
+      >
         {/* Recommended Route Polyline */}
         {activeLayers.routes && showRoutePolyline && (
           <path
@@ -177,7 +184,7 @@ export function InteractiveMap({
 
       {/* Detail Card Overlay */}
       {activePoint && (
-        <div className="absolute bottom-3 left-3 right-3 sm:right-auto sm:max-w-sm bg-white border border-[#DCE3DC] rounded-xl p-3.5 shadow-elevation animate-fade-in z-20">
+        <div className="absolute bottom-3 left-3 right-3 sm:right-auto sm:max-w-sm bg-white border border-[#DCE3DC] rounded-xl p-3.5 shadow-elevation animate-fade-in z-20 max-h-[40%] overflow-y-auto">
           <div className="flex items-start justify-between gap-2">
             <div>
               <span className="text-[10px] font-bold text-[#536057] uppercase tracking-wider block">

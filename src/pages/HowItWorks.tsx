@@ -4,12 +4,14 @@ import { Button } from '@/components/ui/button'
 
 export default function HowItWorks() {
   return (
-    <div className="max-w-4xl mx-auto px-4 py-12 space-y-10">
+    <div className="max-w-4xl mx-auto px-4 py-8 sm:py-12 space-y-8 sm:space-y-10">
       <div className="text-center space-y-3">
         <span className="text-xs font-bold text-[#2F6B45] uppercase tracking-wider">
           Product Process
         </span>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#214D34]">How Rooted Works</h1>
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#214D34]">
+          How Rooted Works
+        </h1>
         <p className="text-base text-[#536057] max-w-xl mx-auto">
           Rooted transforms complex agricultural supply chain data into clear, simple choices.
         </p>
@@ -40,12 +42,14 @@ export default function HowItWorks() {
         ].map((s, idx) => (
           <div
             key={idx}
-            className="p-6 bg-white border border-[#DCE3DC] rounded-2xl flex gap-4 items-start shadow-subtle"
+            className="p-4 sm:p-6 bg-white border border-[#DCE3DC] rounded-2xl flex gap-3 sm:gap-4 items-start shadow-subtle"
           >
-            <span className="text-2xl font-black text-[#2F6B45]">{s.step}</span>
-            <div>
-              <h3 className="font-bold text-lg text-[#214D34]">{s.title}</h3>
-              <p className="text-sm text-[#536057] mt-1">{s.desc}</p>
+            <span className="text-xl sm:text-2xl font-black text-[#2F6B45] flex-shrink-0">
+              {s.step}
+            </span>
+            <div className="min-w-0">
+              <h3 className="font-bold text-base sm:text-lg text-[#214D34]">{s.title}</h3>
+              <p className="text-xs sm:text-sm text-[#536057] mt-1 break-words">{s.desc}</p>
             </div>
           </div>
         ))}

@@ -46,19 +46,21 @@ export default function DemoPage() {
   ]
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-12 space-y-8">
+    <div className="max-w-3xl mx-auto px-4 py-8 sm:py-12 space-y-6 sm:space-y-8">
       <div className="text-center space-y-4">
         <div className="w-16 h-16 rounded-2xl bg-[#DDEBDD] text-[#2F6B45] flex items-center justify-center mx-auto">
           <Sprout className="w-8 h-8" />
         </div>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#214D34]">Try Rooted Demo</h1>
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#214D34]">
+          Try Rooted Demo
+        </h1>
         <p className="text-sm text-[#536057] max-w-xl mx-auto">
           Explore a sample Rooted workspace with pre-loaded shipments, routes, and alerts. No real
           account data is used or modified — this is a safe, isolated preview.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         {features.map((f, i) => (
           <div
             key={i}

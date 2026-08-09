@@ -25,15 +25,15 @@ export function OnboardingModal() {
 
   return (
     <Dialog open={open} onOpenChange={(val) => setOpen(val)}>
-      <DialogContent className="sm:max-w-md bg-white border-[#DCE3DC] p-6 rounded-2xl">
+      <DialogContent className="sm:max-w-md bg-white border-[#DCE3DC] p-4 sm:p-6 rounded-2xl max-h-[90dvh] overflow-y-auto">
         <DialogHeader className="text-center sm:text-left">
-          <div className="w-12 h-12 rounded-2xl bg-[#DDEBDD] text-[#2F6B45] flex items-center justify-center mb-3">
+          <div className="w-12 h-12 rounded-2xl bg-[#DDEBDD] text-[#2F6B45] flex items-center justify-center mb-3 mx-auto sm:mx-0">
             <Sprout className="w-6 h-6" />
           </div>
-          <DialogTitle className="text-xl font-bold text-[#214D34]">
+          <DialogTitle className="text-lg sm:text-xl font-bold text-[#214D34]">
             {t('welcomeOnboarding')}
           </DialogTitle>
-          <DialogDescription className="text-sm text-[#536057] mt-1">
+          <DialogDescription className="text-xs sm:text-sm text-[#536057] mt-1">
             {t('onboardingDesc')}
           </DialogDescription>
         </DialogHeader>
