@@ -159,7 +159,7 @@ export function DockedAssistant({ open, onClose, contextText }: DockedAssistantP
   ]
 
   return (
-    <div className="fixed bottom-20 right-4 lg:bottom-6 lg:right-6 w-[calc(100vw-2rem)] sm:w-[380px] max-w-[380px] h-[min(520px,calc(100dvh-7rem))] bg-white border border-[#DCE3DC] rounded-2xl shadow-elevation z-50 flex flex-col overflow-hidden animate-slide-up">
+    <div className="fixed bottom-20 left-4 right-4 sm:left-auto sm:right-6 lg:bottom-6 w-auto sm:w-[380px] max-w-[380px] h-[min(520px,calc(100dvh-7rem))] bg-white border border-[#DCE3DC] rounded-2xl shadow-elevation z-50 flex flex-col overflow-hidden animate-slide-up">
       {/* Header */}
       <div className="p-3.5 bg-[#214D34] text-white flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -206,7 +206,7 @@ export function DockedAssistant({ open, onClose, contextText }: DockedAssistantP
             className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}
           >
             <div
-              className={`max-w-[85%] p-3 rounded-2xl text-xs leading-relaxed break-words overflow-wrap-anywhere ${
+              className={`max-w-[85%] p-3 rounded-2xl text-xs leading-relaxed break-words ${
                 m.role === 'user'
                   ? 'bg-[#2F6B45] text-white rounded-br-none'
                   : 'bg-white border border-[#DCE3DC] text-[#17221A] rounded-bl-none shadow-subtle'

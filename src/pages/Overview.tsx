@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Truck, AlertTriangle, PlusCircle, Route, Bot, ArrowRight } from 'lucide-react'
+import { Truck, AlertTriangle, PlusCircle, Route, Bot, ArrowRight, RefreshCw } from 'lucide-react'
 import { useAuth } from '@/hooks/use-auth'
 import { useI18n } from '@/hooks/use-i18n'
 import useRealtime from '@/hooks/use-realtime'
@@ -16,14 +16,17 @@ export default function Overview() {
   const [shipments, setShipments] = useState<ShipmentItem[]>([])
   const [alerts, setAlerts] = useState<AlertItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
 
   const loadData = async () => {
+    setLoading(true)
+    setError(false)
     try {
       const [sData, aData] = await Promise.all([getShipments(), getAlerts()])
       setShipments(sData)
       setAlerts(aData)
     } catch {
-      /* ignored */
+      setError(true)
     } finally {
       setLoading(false)
     }
@@ -100,6 +103,15 @@ export default function Overview() {
         </Link>
       </div>
 
+      {error && (
+        <div className="p-6 bg-white border border-[#DCE3DC] rounded-2xl text-center space-y-3">
+          <p className="text-sm text-[#536057]">Failed to load data. Please try again.</p>
+          <Button onClick={loadData} size="sm" className="bg-[#2F6B45] text-white">
+            Retry
+          </Button>
+        </div>
+      )}
+
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-bold text-[#214D34]">{t('activeShipments')}</h2>
@@ -130,7 +142,7 @@ export default function Overview() {
             {shipments.map((s) => (
               <div
                 key={s.id}
-                className="p-4 bg-white border border-[#DCE3DC] rounded-2xl space-y-3 shadow-subtle hover:border-[#2F6B45] transition-colors duration-150"
+                className="p-4 bg-white border border-[#DCE3DC] rounded-2xl space-y-3 shadow-subtle hover:border-[#2F6B45] transition-colors duration-150 min-w-0"
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-xs font-bold text-[#214D34] uppercase tracking-wider truncate">

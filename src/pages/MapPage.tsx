@@ -13,7 +13,7 @@ export default function MapPage() {
         </p>
       </div>
 
-      <InteractiveMap height="h-[calc(100dvh-280px)] min-h-[300px]" />
+      <InteractiveMap height="h-[400px] lg:h-[calc(100dvh-280px)] min-h-[300px]" />
     </div>
   )
 }

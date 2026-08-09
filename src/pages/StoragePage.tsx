@@ -8,12 +8,23 @@ export default function StoragePage() {
   const { t } = useI18n()
   const [storage, setStorage] = useState<StorageItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+
+  const loadData = async () => {
+    setLoading(true)
+    setError(false)
+    try {
+      const data = await getStorageOptions()
+      setStorage(data)
+    } catch {
+      setError(true)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    getStorageOptions()
-      .then(setStorage)
-      .catch(() => {})
-      .finally(() => setLoading(false))
+    loadData()
   }, [])
 
   return (
@@ -27,12 +38,23 @@ export default function StoragePage() {
 
       {loading ? (
         <div className="p-8 text-center text-xs text-[#536057]">Loading storage options…</div>
+      ) : error ? (
+        <div className="p-8 bg-white rounded-2xl border border-[#DCE3DC] text-center space-y-3">
+          <p className="text-xs text-[#536057]">Failed to load storage options.</p>
+          <Button onClick={loadData} size="sm" className="bg-[#2F6B45] text-white">
+            Retry
+          </Button>
+        </div>
+      ) : storage.length === 0 ? (
+        <div className="p-8 bg-white rounded-2xl border border-[#DCE3DC] text-center text-xs text-[#536057]">
+          No storage facilities found nearby.
+        </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           {storage.map((s) => (
             <div
               key={s.id}
-              className="p-4 sm:p-5 bg-white border border-[#DCE3DC] rounded-2xl shadow-subtle space-y-3"
+              className="p-4 sm:p-5 bg-white border border-[#DCE3DC] rounded-2xl shadow-subtle space-y-3 min-w-0"
             >
               <div className="flex items-center justify-between gap-2 flex-wrap">
                 <span className="text-xs font-bold text-[#214D34] uppercase tracking-wider">

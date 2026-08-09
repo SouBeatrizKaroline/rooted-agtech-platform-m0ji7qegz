@@ -156,7 +156,7 @@ export default function AssistantPage() {
   }
 
   return (
-    <div className="h-[calc(100dvh-200px)] min-h-[400px] flex flex-col bg-white border border-[#DCE3DC] rounded-2xl overflow-hidden shadow-elevation animate-fade-in">
+    <div className="h-[calc(100dvh-200px)] min-h-[320px] flex flex-col bg-white border border-[#DCE3DC] rounded-2xl overflow-hidden shadow-elevation animate-fade-in">
       {/* Header */}
       <div className="p-4 bg-[#214D34] text-white flex items-center justify-between">
         <div className="flex items-center gap-3">

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { Route, CheckCircle2, AlertTriangle, ArrowLeft, Bot } from 'lucide-react'
+import { Route, CheckCircle2, AlertTriangle, ArrowLeft, Bot, RefreshCw } from 'lucide-react'
 import { getShipment, ShipmentItem } from '@/services/shipments'
 import { getShipmentRoutes, RouteItem } from '@/services/routes'
 import { InteractiveMap } from '@/components/map/InteractiveMap'
@@ -15,21 +15,40 @@ export default function RouteResults() {
   const [shipment, setShipment] = useState<ShipmentItem | null>(null)
   const [routes, setRoutes] = useState<RouteItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+
+  const loadData = async () => {
+    if (!shipmentId) return
+    setLoading(true)
+    setError(false)
+    try {
+      const [s, r] = await Promise.all([getShipment(shipmentId), getShipmentRoutes(shipmentId)])
+      setShipment(s)
+      setRoutes(r)
+    } catch {
+      setError(true)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    if (shipmentId) {
-      Promise.all([getShipment(shipmentId), getShipmentRoutes(shipmentId)])
-        .then(([s, r]) => {
-          setShipment(s)
-          setRoutes(r)
-        })
-        .catch(() => {})
-        .finally(() => setLoading(false))
-    }
+    loadData()
   }, [shipmentId])
 
   if (loading) {
     return <div className="p-8 text-center text-xs text-[#536057]">Analyzing shipment routes…</div>
+  }
+
+  if (error) {
+    return (
+      <div className="p-8 bg-white rounded-2xl border border-[#DCE3DC] text-center space-y-3">
+        <p className="text-sm text-[#536057]">Failed to load route analysis.</p>
+        <Button onClick={loadData} size="sm" className="bg-[#2F6B45] text-white">
+          Retry
+        </Button>
+      </div>
+    )
   }
 
   const recRoute = routes.find((r) => r.is_recommended) || routes[0]
@@ -70,12 +89,12 @@ export default function RouteResults() {
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 text-center">
-            <div className="p-2.5 rounded-xl bg-[#F6F7F2]">
+            <div className="p-2.5 rounded-xl bg-[#F6F7F2] min-w-0">
               <span className="text-[10px] text-[#737D75] font-bold uppercase">Distance</span>
               <p className="font-extrabold text-sm text-[#214D34]">{recRoute.distance_km} km</p>
               <BadgeTag type="data" className="mt-1" />
             </div>
-            <div className="p-2.5 rounded-xl bg-[#F6F7F2]">
+            <div className="p-2.5 rounded-xl bg-[#F6F7F2] min-w-0">
               <span className="text-[10px] text-[#737D75] font-bold uppercase">
                 Est. Travel Time
               </span>
@@ -84,7 +103,7 @@ export default function RouteResults() {
               </p>
               <BadgeTag type="estimate" className="mt-1" />
             </div>
-            <div className="p-2.5 rounded-xl bg-[#F6F7F2]">
+            <div className="p-2.5 rounded-xl bg-[#F6F7F2] min-w-0">
               <span className="text-[10px] text-[#737D75] font-bold uppercase">
                 Est. Freight Cost
               </span>
@@ -93,7 +112,7 @@ export default function RouteResults() {
               </p>
               <BadgeTag type="estimate" className="mt-1" />
             </div>
-            <div className="p-2.5 rounded-xl bg-[#F6F7F2]">
+            <div className="p-2.5 rounded-xl bg-[#F6F7F2] min-w-0">
               <span className="text-[10px] text-[#737D75] font-bold uppercase">Risk Level</span>
               <p className="font-extrabold text-sm text-[#214D34] uppercase">
                 {recRoute.risk_level}

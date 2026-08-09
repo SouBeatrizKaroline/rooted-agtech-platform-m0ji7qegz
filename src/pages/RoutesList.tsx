@@ -3,16 +3,28 @@ import { Link } from 'react-router-dom'
 import { Route, ShieldCheck, Filter } from 'lucide-react'
 import { getRoutes, RouteItem } from '@/services/routes'
 import { BadgeTag } from '@/components/ui/BadgeTag'
+import { Button } from '@/components/ui/button'
 
 export default function RoutesList() {
   const [routes, setRoutes] = useState<RouteItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+
+  const loadData = async () => {
+    setLoading(true)
+    setError(false)
+    try {
+      const data = await getRoutes()
+      setRoutes(data)
+    } catch {
+      setError(true)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    getRoutes()
-      .then(setRoutes)
-      .catch(() => {})
-      .finally(() => setLoading(false))
+    loadData()
   }, [])
 
   return (
@@ -26,8 +38,15 @@ export default function RoutesList() {
 
       {loading ? (
         <div className="p-8 text-center text-xs text-[#536057]">Loading route catalog…</div>
+      ) : error ? (
+        <div className="p-8 bg-white rounded-2xl border border-[#DCE3DC] text-center space-y-3">
+          <p className="text-xs text-[#536057]">Failed to load routes.</p>
+          <Button onClick={loadData} size="sm" className="bg-[#2F6B45] text-white">
+            Retry
+          </Button>
+        </div>
       ) : routes.length === 0 ? (
-        <div className="p-8 bg-white rounded-2xl border text-center text-xs text-[#536057]">
+        <div className="p-8 bg-white rounded-2xl border border-[#DCE3DC] text-center text-xs text-[#536057]">
           No analyzed routes found. Plan a shipment to create your first route analysis.
         </div>
       ) : (

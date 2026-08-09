@@ -23,12 +23,10 @@ export default function Index() {
           <Sprout className="w-3.5 h-3.5 text-[#2F6B45]" />
           <span>Agricultural Logistics & Decision Platform</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-[#214D34] tracking-tight leading-tight">
+        <h1 className="text-responsive-hero font-extrabold text-[#214D34] tracking-tight leading-tight text-balance">
           {t('tagline')}
         </h1>
-        <p className="max-w-2xl mx-auto text-sm sm:text-base lg:text-lg text-[#536057]">
-          {t('subtitle')}
-        </p>
+        <p className="max-w-2xl mx-auto text-responsive-subtitle text-[#536057]">{t('subtitle')}</p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
           <Button
             asChild
@@ -89,7 +87,7 @@ export default function Index() {
       <section className="bg-white border-y border-[#DCE3DC] py-10 sm:py-14 px-4">
         <div className="max-w-5xl mx-auto space-y-6 sm:space-y-8 text-center">
           <div>
-            <h2 className="text-2xl sm:text-3xl font-bold text-[#214D34]">
+            <h2 className="text-responsive-title font-bold text-[#214D34]">
               {t('howItWorksTitle')}
             </h2>
             <p className="text-sm text-[#536057] mt-1">{t('howItWorksDesc')}</p>
@@ -118,9 +116,7 @@ export default function Index() {
 
       <section className="max-w-5xl mx-auto px-4 space-y-6 sm:space-y-8">
         <div className="text-center">
-          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#214D34]">
-            {t('benefitsTitle')}
-          </h2>
+          <h2 className="text-responsive-title font-bold text-[#214D34]">{t('benefitsTitle')}</h2>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {[
@@ -172,7 +168,7 @@ export default function Index() {
 
       <section className="bg-[#214D34] text-white py-10 sm:py-14 px-4">
         <div className="max-w-5xl mx-auto space-y-6 text-center">
-          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold">{t('peopleTitle')}</h2>
+          <h2 className="text-responsive-title font-bold">{t('peopleTitle')}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 text-left">
             {[
               { role: t('farmerRole'), line: t('farmerLine') },
@@ -193,7 +189,7 @@ export default function Index() {
       </section>
 
       <section className="max-w-4xl mx-auto px-4 text-center space-y-4 sm:space-y-6">
-        <h2 className="text-2xl sm:text-3xl font-bold text-[#214D34]">
+        <h2 className="text-responsive-title font-bold text-[#214D34] text-balance">
           Let's make your next shipment easier.
         </h2>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">

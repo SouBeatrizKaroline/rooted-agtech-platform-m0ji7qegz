@@ -25,7 +25,7 @@ export function InteractiveMap({
   showRoutePolyline = true,
   selectedPointId,
   onSelectPoint,
-  height = 'h-[420px]',
+  height = 'h-[400px] sm:h-[420px]',
 }: InteractiveMapProps) {
   const [activeLayers, setActiveLayers] = useState({
     routes: true,
@@ -84,7 +84,7 @@ export function InteractiveMap({
       <div className="absolute inset-0 opacity-40 bg-[radial-gradient(#2F6B45_1px,transparent_1px)] [background-size:16px_16px]" />
 
       {/* Layer Toggles */}
-      <div className="absolute top-3 left-3 z-10 bg-white/95 backdrop-blur-sm border border-[#DCE3DC] rounded-xl p-1.5 flex gap-1 text-[11px] shadow-subtle flex-wrap max-w-[calc(100%-1.5rem)]">
+      <div className="absolute top-3 left-3 z-10 bg-white/95 backdrop-blur-sm border border-[#DCE3DC] rounded-xl p-1.5 flex gap-1 text-[11px] shadow-subtle flex-wrap max-w-[calc(100%-1.5rem)] min-w-0">
         <button
           onClick={() => setActiveLayers((p) => ({ ...p, routes: !p.routes }))}
           aria-pressed={activeLayers.routes}

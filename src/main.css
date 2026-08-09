@@ -61,6 +61,14 @@
     --chart-3: 209 100% 32%;
     --chart-4: 42 100% 50%;
     --chart-5: 33 100% 50%;
+
+    --z-base: 0;
+    --z-navigation: 30;
+    --z-dropdown: 40;
+    --z-floating: 45;
+    --z-assistant: 50;
+    --z-modal: 60;
+    --z-notification: 70;
   }
 
   .dark {
@@ -106,6 +114,14 @@
     --chart-3: 43 100% 32%;
     --chart-4: 340 100% 50%;
     --chart-5: 10 100% 50%;
+
+    --z-base: 0;
+    --z-navigation: 30;
+    --z-dropdown: 40;
+    --z-floating: 45;
+    --z-assistant: 50;
+    --z-modal: 60;
+    --z-notification: 70;
   }
 
   /* NEVER REMOVE THIS */
@@ -309,6 +325,29 @@
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
+
+  .text-responsive-hero {
+    font-size: clamp(1.75rem, 5vw, 3.75rem);
+    line-height: 1.15;
+  }
+
+  .text-responsive-title {
+    font-size: clamp(1.25rem, 3vw, 2rem);
+    line-height: 1.25;
+  }
+
+  .text-responsive-subtitle {
+    font-size: clamp(0.875rem, 2vw, 1.125rem);
+    line-height: 1.5;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .min-w-0 {
+    min-width: 0;
+  }
 }
 
 @layer base {
@@ -319,6 +358,9 @@
 
   body {
     overscroll-behavior-y: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   @media (prefers-reduced-motion: reduce) {
